@@ -1,0 +1,213 @@
+image: node:24.9.0
+
+stages:
+  - build
+  - deploy
+  - dev
+  - storybook
+
+cache:
+  paths:
+    - node_modules/
+
+# =========================
+# 🔧 ENVIRONMENT SETUP BLOCKS
+# =========================
+.build_env_dev: &build_env_dev
+  - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" > .env
+  - echo "SENTRY_ENVIRONMENT=development" >> .env
+  - echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL_DEV" >> .env
+  - echo "OLD_URL=https://www.brighton.co.id" >> .env
+  - echo "CLIENT_ID_NODE=$CLIENT_ID_NODE" >> .env
+  - echo "CLIENT_ID=$CLIENT_ID" >> .env
+  - echo "NODE_URL=$API_URL_DEV" >> .env
+  - echo "API_URL=$API_URL_DEV" >> .env
+  - echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> .env
+  - echo "NEXT_PUBLIC_ACCESS_TOKEN=$NEXT_PUBLIC_ACCESS_TOKEN" >> .env
+  - echo "API_SECRET_KEY=" >> .env
+  - echo "CLEAN=ok" >> .env
+  - echo "CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> .env
+  - echo "NEXT_PUBLIC_OLD_URL=https://www.brighton.co.id" >> .env
+  - echo "NEXT_PUBLIC_CLIENT_ID_NODE=$CLIENT_ID_NODE" >> .env
+  - echo "NEXT_PUBLIC_CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> .env
+  - echo "NEXT_PUBLIC_CLIENT_ID=$CLIENT_ID" >> .env
+  - echo "NODE_ENV=development" >> .env
+  - echo "NEXT_PUBLIC_ACCESS_TOKEN=$NEXT_PUBLIC_ACCESS_TOKEN" >> .env
+  - echo "NEXT_PUBLIC_CLEAN=ok" >> .env
+  - node -e "['NEXT_PUBLIC_API_URL_DEV','API_URL_DEV'].forEach(k=>{if(!process.env[k]){throw new Error(k+' is missing')}})"
+
+.build_env_prod: &build_env_prod
+  - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" > .env
+  - echo "SENTRY_ENVIRONMENT=production" >> .env
+  - echo "CLEAN=ok" >> .env
+  - echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" >> .env
+  - echo "OLD_URL=https://www.brighton.co.id" >> .env
+  - echo "CLIENT_ID_NODE=$CLIENT_ID_NODE" >> .env
+  - echo "CLIENT_ID=$CLIENT_ID" >> .env
+  - echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> .env
+  - echo "NODE_URL=$API_URL" >> .env
+  - echo "API_URL=$API_URL" >> .env
+  - echo "API_SECRET_KEY=" >> .env
+  - echo "NEXT_PUBLIC_OLD_URL=https://www.brighton.co.id" >> .env
+  - echo "CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> .env
+  - echo "NEXT_PUBLIC_CLIENT_ID_NODE=$CLIENT_ID_NODE" >> .env
+  - echo "NEXT_PUBLIC_CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> .env
+  - echo "NEXT_PUBLIC_CLIENT_ID=$CLIENT_ID" >> .env
+  - echo "NEXT_PUBLIC_ACCESS_TOKEN=$NEXT_PUBLIC_ACCESS_TOKEN" >> .env
+  - echo "NEXT_PUBLIC_CLEAN=ok" >> .env
+  - node -e "['NEXT_PUBLIC_API_URL','API_URL'].forEach(k=>{if(!process.env[k]){throw new Error(k+' is missing')}})"
+
+# =========================
+# 🧱 BUILD JOB
+# =========================
+build_dev:
+  stage: build
+  script:
+    - *build_env_dev
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - .next/
+      - .env
+      # - firebase.json
+    expire_in: 3 days
+  tags:
+    - gitlab-pc
+  only:
+    - dev
+
+build_prod:
+  stage: build
+  script:
+    - *build_env_prod
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - .next/
+      - .env
+      # - firebase.json
+  tags:
+    - gitlab-pc
+  only:
+    - master
+
+# =========================
+# 🚀 DEPLOY JOBS
+# =========================
+
+deploy_dev:
+  stage: dev
+  script:
+    - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" >> docker/development/.env
+    - echo "CLEAN=ok" >> docker/production/.env
+    - echo "SENTRY_ENVIRONMENT=development" >> docker/development/.env
+    - echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL_DEV" >> docker/development/.env
+    - echo "OLD_URL=https://www.brighton.co.id" >> docker/development/.env
+    - echo "CLIENT_ID_NODE=$CLIENT_ID_NODE" >> docker/development/.env
+    - echo "CLIENT_ID=$CLIENT_ID" >> docker/development/.env
+    - echo "NODE_URL=$API_URL_DEV" >> docker/development/.env
+    - echo "API_URL=$API_URL_DEV" >> docker/development/.env
+    - echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> docker/development/.env
+    - echo "API_SECRET_KEY=" >> docker/development/.env
+    - echo "NEXT_PUBLIC_OLD_URL=https://www.brighton.co.id" >> docker/development/.env
+    - echo "CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> docker/development/.env
+    - echo "NEXT_PUBLIC_CLIENT_ID_NODE=$CLIENT_ID_NODE" >> docker/development/.env
+    - echo "NEXT_PUBLIC_CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> docker/development/.env
+    - echo "NEXT_PUBLIC_CLIENT_ID=$CLIENT_ID" >> docker/development/.env
+    - echo "NODE_ENV=development" >> docker/development/.env
+    - echo "NEXT_PUBLIC_ACCESS_TOKEN=$NEXT_PUBLIC_ACCESS_TOKEN" >> docker/development/.env
+    - echo "NEXT_PUBLIC_CLEAN=ok" >> docker/development/.env
+    - docker compose up -d --no-deps --build development
+    - docker system prune -a -f
+    - |
+        curl -X POST https://api.cloudflare.com/client/v4/zones/$ZONE_ID/purge_cache \
+        -H 'Content-Type: application/json' \
+        -H 'Authorization: Bearer $API_CF' \
+        -d '{
+          "hosts": [
+            "bre-fe-dev.brighton.co.id"
+          ]
+        }'
+  tags:
+    - bre-frontend
+  only:
+    - dev
+
+deploy_prod:
+  stage: deploy
+  needs:
+    - ["build_prod"]
+  script:
+    - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" > docker/production/.env
+    - echo "SENTRY_ENVIRONMENT=production" >> docker/production/.env
+    - echo "CLEAN=ok" >> docker/production/.env
+    - echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" >> docker/production/.env
+    - echo "OLD_URL=https://www.brighton.co.id" >> docker/production/.env
+    - echo "CLIENT_ID_NODE=$CLIENT_ID_NODE" >> docker/production/.env
+    - echo "CLIENT_ID=$CLIENT_ID" >> docker/production/.env
+    - echo "NODE_URL=$API_URL" >> docker/production/.env
+    - echo "API_URL=$API_URL" >> docker/production/.env
+    - echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> docker/production/.env
+    - echo "API_SECRET_KEY=" >> docker/production/.env
+    - echo "NEXT_PUBLIC_OLD_URL=https://www.brighton.co.id" >> docker/production/.env
+    - echo "CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> docker/production/.env
+    - echo "NEXT_PUBLIC_CLIENT_ID_NODE=$CLIENT_ID_NODE" >> docker/production/.env
+    - echo "NEXT_PUBLIC_CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> docker/production/.env
+    - echo "NEXT_PUBLIC_CLIENT_ID=$CLIENT_ID" >> docker/production/.env
+    - echo "NEXT_PUBLIC_ACCESS_TOKEN=$NEXT_PUBLIC_ACCESS_TOKEN" >> docker/production/.env
+    - echo "NEXT_PUBLIC_CLEAN=ok" >> docker/production/.env
+    - docker compose up -d --no-deps --build production
+    - docker system prune -a -f
+    - |
+        curl -X POST https://api.cloudflare.com/client/v4/zones/$ZONE_ID/purge_cache \
+        -H 'Content-Type: application/json' \
+        -H 'Authorization: Bearer $API_CF' \
+        -d '{
+          "hosts": [
+            "brighton-site.brighton.co.id"
+          ]
+        }'
+  tags:
+    - bre-frontend
+  only:
+    - master
+
+storybook_deploy:
+  stage: storybook
+  needs:
+    - ["build_dev"]
+  tags:
+    - monitoring-vm
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - whoami
+    - cd /home/mnflrizki/brighton-frontend-web
+    - git config --global --add safe.directory /home/mnflrizki/brighton-frontend-web
+    - git remote set-url origin https://mnflrizki:$CI_ACCESS_TOKEN@gitlab.com/andazlan/brighton-frontend-web.git
+    - git config pull.rebase false
+    - git reset --hard
+    #- git pull origin master
+    - git fetch --all
+    # reset to match exactly the remote master branch (force overwrite)
+    - git reset --hard origin/dev
+    - export NVM_DIR="/home/mnflrizki/.nvm"
+    - source "$NVM_DIR/nvm.sh"
+    - npm install
+    - npm run build
+    - npm run build-storybook
+    - pm2 reload storybook --update-env || pm2 start npm --name "storybook" -- run storybook
+    - pm2 save
+    - |
+        curl -X POST https://api.cloudflare.com/client/v4/zones/$ZONE_ID/purge_cache \
+        -H 'Content-Type: application/json' \
+        -H 'Authorization: Bearer $API_CF' \
+        -d '{
+          "hosts": [
+            "docs.brighton.co.id"
+          ]
+        }' 
+  only:
+    - dev

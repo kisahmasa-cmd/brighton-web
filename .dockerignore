@@ -1,0 +1,8 @@
+node_modules
+.git
+.gitlab-ci.yml
+storybook-static
+.next
+.env.example
+firebase
+.vscode
