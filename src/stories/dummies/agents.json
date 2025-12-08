@@ -1,0 +1,70 @@
+[
+  {
+    "ID": 20990,
+    "ClassName": "AgentData",
+    "Name": "DEWITHA (SUOF)",
+    "WAPhone": "6281517183150",
+    "WAPhone2": null,
+    "Phone": "081517183150",
+    "PhoneCDMA": null,
+    "Address": " AZURA HOUSE BLOK C15 NO.25, VANYA PARK, BSD                 ",
+    "Position": "Business Manager",
+    "Link": "https://www.brighton.co.id/anitadewisoesanto",
+    "Online": false,
+    "LastOnline": "2025-05-21 13:43:00",
+    "ShowLocation": true,
+    "Photo": {
+      "ID": 7043282,
+      "Title": "Foto Bu Dewitha",
+      "Small": "https://cdn.brighton.co.id/Uploads/Images/7043282/kkcnsdLk/Foto-Bu-Dewitha-Small.jpg",
+      "Medium": "https://cdn.brighton.co.id/Uploads/Images/7043282/kkcnsdLk/Foto-Bu-Dewitha-Medium.jpg",
+      "Original": "https://cdn.brighton.co.id/Uploads/Images/7043282/kkcnsdLk/Foto-Bu-Dewitha.jpg"
+    },
+    "Office": {
+      "ID": 38,
+      "ClassName": "OfficeData",
+      "Phone": "021 2222 9991",
+      "Name": "Brighton Favour BSD",
+      "Address": "Ruko Mendrisio 3 Blok C No.30 Boulevard Il Lago, Gading Serpong",
+      "Email": "brightonfavour@yahoo.com",
+      "City": "BSD",
+      "Code": "BRBSD",
+      "Alias": "Brighton Favour",
+      "LocationAndProvince": "BSD - Tangerang"
+    }
+  },
+  {
+    "ID": 17679,
+    "ClassName": "AgentData",
+    "Name": "LOLITA (PUTL)",
+    "WAPhone": "6285921514729",
+    "WAPhone2": null,
+    "Phone": "085921514729",
+    "PhoneCDMA": null,
+    "Address": "JL CHALCEDONY BARAT 7 NO 11, TANGERANG",
+    "Position": "Business Manager",
+    "Link": "https://www.brighton.co.id/lolitaodinloekito",
+    "Online": false,
+    "LastOnline": "2025-05-21 14:46:25",
+    "ShowLocation": true,
+    "Photo": {
+      "ID": 4037948,
+      "Title": "LOLITA",
+      "Small": "https://cdn-files.brighton.co.id/Uploads/Images/4037948/9Q8GXI8S/LOLITA-Small.jpg",
+      "Medium": "https://cdn-files.brighton.co.id/Uploads/Images/4037948/9Q8GXI8S/LOLITA-Medium.jpg",
+      "Original": "https://cdn-files.brighton.co.id/Uploads/Images/4037948/9Q8GXI8S/LOLITA.jpg"
+    },
+    "Office": {
+      "ID": 450,
+      "ClassName": "OfficeData",
+      "Phone": "021 38924226",
+      "Name": "Brighton Priority Gading Serpong",
+      "Address": "Ruko Crystal Blok CRL 2 No. 22, Kel. Pakulonan Barat, Kec. Kelapa Dua",
+      "Email": "brightonhub.gadingserpong@yahoo.com",
+      "City": "Gading Serpong",
+      "Code": "PRGS",
+      "Alias": "Brighton Priority",
+      "LocationAndProvince": "Gading Serpong - Tangerang"
+    }
+  }
+]

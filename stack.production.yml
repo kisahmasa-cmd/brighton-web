@@ -1,0 +1,20 @@
+services:
+  production:
+    image: brighton-frontend-web-frontend:production
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./docker/production/.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]   # required endpoint
+      interval: 10s
+      timeout: 5s
+      retries: 50
+      start_period: 120s
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        order: start-first
+      restart_policy:
+        condition: any

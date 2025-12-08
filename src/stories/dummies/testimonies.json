@@ -1,0 +1,30 @@
+[
+  {
+    "ID": 116,
+    "Nama": "testing",
+    "Type": "UMUM",
+    "Testimoni": "Semua testimoni yang dikirimkan akan dikurasi oleh admin sebelum ditampilkan kepada pengunjung Semua testimoni yang dikirimkan akan dikurasi oleh admin sebelum ditampilkan kepada pengunjung Semua testimoni yang dikirimkan akan dikurasi oleh admin sebelum ditampilkan kepada pengunjung",
+    "Photo": {
+      "Small": "https://storage.googleapis.com/brighton-files/Uploads/Images/3534024/aqfX4hMR/PAS-FOTO-NOVIA-BACKGROUND-KUNING-Small.jpg",
+      "Medium": "https://storage.googleapis.com/brighton-files/Uploads/Images/3534024/aqfX4hMR/PAS-FOTO-NOVIA-BACKGROUND-KUNING-Medium.jpg",
+      "Original": "https://storage.googleapis.com/brighton-files/Uploads/Images/3534024/aqfX4hMR/PAS-FOTO-NOVIA-BACKGROUND-KUNING.jpg",
+      "SmallWebP": null,
+      "MediumWebP": null,
+      "OriginalWebP": null
+    }
+  },
+  {
+    "ID": 143,
+    "Nama": "HUSNI",
+    "Type": "AGEN",
+    "Testimoni": "Saya sangat puas dengan pelayanan tim ini. Proses pembelian rumah berjalan cepat, semua dokumen diurus dengan rapi, dan komunikasinya jelas dari awal sampai akhir. Sangat direkomendasikan untuk yang ingin beli rumah tanpa ribet!",
+    "Photo": {
+      "Small": "https://storage.googleapis.com/brighton-assets/Uploads/Images/6468450/Y30gtfGF/Rectangle2-Small.png",
+      "Medium": "https://storage.googleapis.com/brighton-assets/Uploads/Images/6468450/Y30gtfGF/Rectangle2-Medium.png",
+      "Original": "https://storage.googleapis.com/brighton-assets/Uploads/Images/6468450/Y30gtfGF/Rectangle2.png",
+      "SmallWebP": null,
+      "MediumWebP": null,
+      "OriginalWebP": null
+    }
+  }
+]

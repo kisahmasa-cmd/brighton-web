@@ -1,0 +1,18 @@
+services:
+  development:
+    image: $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/brighton-frontend-web-frontend:dev
+    container_name: brighton-dev
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    env_file:
+      - ./docker/development/.env
+
+  staging:
+    image: $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/brighton-frontend-web-frontend:staging
+    container_name: brighton-staging
+    ports:
+      - "3001:3000"
+    restart: unless-stopped
+    env_file:
+      - ./docker/production/.env

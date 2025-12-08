@@ -1,0 +1,352 @@
+image: google/cloud-sdk:slim
+
+# services:
+#   - name: docker:28.0.0-dind
+#     command: ["--tls=false", "--host=tcp://0.0.0.0:2375"]
+
+stages:
+  - build-dev
+  - build-staging
+  - build-production
+  - deploy-dev
+  - deploy-staging
+  - deploy-production
+  - storybook
+
+variables:
+  # DOCKER_HOST: tcp://docker:2375/
+  # DOCKER_TLS_CERTDIR: ""
+  # DOCKER_HOST: tcp://host.docker.internal:2375
+
+  IMAGE: "$REGION-docker.pkg.dev/$PROJECT_ID/$REPO/$CI_PROJECT_NAME-frontend"
+
+before_script:
+  - apt-get update && apt-get install -y docker.io curl
+  - echo $GCLOUD_SERVICE_KEY | base64 -d > ${CI_PROJECT_DIR}/gcloud.json
+  - gcloud auth activate-service-account --key-file=${CI_PROJECT_DIR}/gcloud.json
+  - gcloud config set project $PROJECT_ID
+  - gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
+
+# =========================
+# 🔧 ENVIRONMENT SETUP BLOCKS
+# =========================
+.build_env_dev: &build_env_dev
+  - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" > .env
+  - echo "SENTRY_ENVIRONMENT=development" >> .env
+  - echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL_DEV" >> .env
+  - echo "OLD_URL=https://www.brighton.co.id" >> .env
+  - echo "CLIENT_ID_NODE=$CLIENT_ID_NODE" >> .env
+  - echo "CLIENT_ID=$CLIENT_ID" >> .env
+  - echo "NODE_URL=$API_URL_DEV" >> .env
+  - echo "API_URL=$API_URL_DEV" >> .env
+  - echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> .env
+  - echo "NEXT_PUBLIC_ACCESS_TOKEN=$NEXT_PUBLIC_ACCESS_TOKEN" >> .env
+  - echo "API_SECRET_KEY=" >> .env
+  - echo "CLEAN=ok" >> .env
+  - echo "CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> .env
+  - echo "NEXT_PUBLIC_OLD_URL=https://www.brighton.co.id" >> .env
+  - echo "NEXT_PUBLIC_CLIENT_ID_NODE=$CLIENT_ID_NODE" >> .env
+  - echo "NEXT_PUBLIC_CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> .env
+  - echo "NEXT_PUBLIC_CLIENT_ID=$CLIENT_ID" >> .env
+  - echo "NODE_ENV=development" >> .env
+  - echo "NEXT_PUBLIC_ACCESS_TOKEN=$NEXT_PUBLIC_ACCESS_TOKEN" >> .env
+  - echo "NEXT_PUBLIC_CLEAN=ok" >> .env
+  - echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=$CAPTCHA_SITE_KEY" >> .env
+  - echo "NEXT_PUBLIC_BASE_URL=https://bre-fe-dev.brighton.co.id" >> .env
+ # - node -e "['NEXT_PUBLIC_API_URL_DEV','API_URL_DEV'].forEach(k=>{if(!process.env[k]){throw new Error(k+' is missing')}})"
+
+
+.build_env_staging: &build_env_staging
+  - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" > .env
+  - echo "SENTRY_ENVIRONMENT=production" >> .env
+  - echo "CLEAN=ok" >> .env
+  - echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" >> .env
+  - echo "OLD_URL=https://www.brighton.co.id" >> .env
+  - echo "CLIENT_ID_NODE=$CLIENT_ID_NODE" >> .env
+  - echo "CLIENT_ID=$CLIENT_ID" >> .env
+  - echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> .env
+  - echo "NODE_URL=$API_URL" >> .env
+  - echo "API_URL=$API_URL" >> .env
+  - echo "API_SECRET_KEY=" >> .env
+  - echo "NEXT_PUBLIC_OLD_URL=https://www.brighton.co.id" >> .env
+  - echo "CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> .env
+  - echo "NEXT_PUBLIC_CLIENT_ID_NODE=$CLIENT_ID_NODE" >> .env
+  - echo "NEXT_PUBLIC_CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> .env
+  - echo "NEXT_PUBLIC_CLIENT_ID=$CLIENT_ID" >> .env
+  - echo "NEXT_PUBLIC_ACCESS_TOKEN=$NEXT_PUBLIC_ACCESS_TOKEN" >> .env
+  - echo "NEXT_PUBLIC_CLEAN=ok" >> .env
+  - echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=$CAPTCHA_SITE_KEY" >> .env
+  - echo "NEXT_PUBLIC_BASE_URL=https://brighton-site.brighton.co.id" >> .env
+
+.build_env_prod: &build_env_prod
+  - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" > .env
+  - echo "SENTRY_ENVIRONMENT=production" >> .env
+  - echo "CLEAN=ok" >> .env
+  - echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" >> .env
+  - echo "OLD_URL=https://www.brighton.co.id" >> .env
+  - echo "CLIENT_ID_NODE=$CLIENT_ID_NODE" >> .env
+  - echo "CLIENT_ID=$CLIENT_ID" >> .env
+  - echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> .env
+  - echo "NODE_URL=$API_URL" >> .env
+  - echo "API_URL=$API_URL" >> .env
+  - echo "API_SECRET_KEY=" >> .env
+  - echo "NEXT_PUBLIC_OLD_URL=https://www.brighton.co.id" >> .env
+  - echo "CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> .env
+  - echo "NEXT_PUBLIC_CLIENT_ID_NODE=$CLIENT_ID_NODE" >> .env
+  - echo "NEXT_PUBLIC_CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> .env
+  - echo "NEXT_PUBLIC_CLIENT_ID=$CLIENT_ID" >> .env
+  - echo "NEXT_PUBLIC_ACCESS_TOKEN=$NEXT_PUBLIC_ACCESS_TOKEN" >> .env
+  - echo "NEXT_PUBLIC_CLEAN=ok" >> .env
+  - echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=$CAPTCHA_SITE_KEY" >> .env
+  - echo "NEXT_PUBLIC_BASE_URL=https://brighton-site.brighton.co.id" >> .env
+
+ # - node -e "['NEXT_PUBLIC_API_URL','API_URL'].forEach(k=>{if(!process.env[k]){throw new Error(k+' is missing')}})"
+
+# ============================================
+# 🔨 BUILD DEV IMAGE (shared runner)
+# ============================================
+build-development:
+  stage: build-dev
+  variables:
+    DOCKER_HOST: tcp://host.docker.internal:2375
+  tags:
+    - gitlab-pc          # <-- your shared runner
+  script:
+    - *build_env_dev
+    - docker build -f docker/development/Dockerfile -t $IMAGE:dev .
+    - docker push $IMAGE:dev
+  only:
+    - dev
+
+
+# ============================================
+# 🔨 BUILD PROD IMAGE (shared runner)
+# ============================================
+build-staging:
+  stage: build-staging
+  variables:
+    DOCKER_HOST: tcp://host.docker.internal:2375
+  tags:
+    - gitlab-pc
+  script:
+    - *build_env_prod
+    - docker build -f docker/production/Dockerfile -t $IMAGE:staging .
+    - docker push $IMAGE:staging
+  only:
+    - staging
+
+build-production:
+  stage: build-production
+  variables:
+    DOCKER_HOST: tcp://host.docker.internal:2375
+  tags:
+    - gitlab-pc
+  script:
+    - *build_env_prod
+    - docker build -f docker/production/Dockerfile -t $IMAGE:production .
+    - docker push $IMAGE:production
+  only:
+    - master
+
+
+# ============================================
+# 🚀 DEPLOY DEV (runs directly on bre-frontend)
+# ============================================
+deploy-dev:
+  stage: deploy-dev
+  tags:
+    - bre-frontend       # <-- your shell executor runner
+  before_script:
+    - echo "$GCLOUD_SERVICE_KEY" | base64 -d > gcloud.json
+    - gcloud auth activate-service-account --key-file=gcloud.json
+    - gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
+  script:
+    # write env vars into docker/development/.env
+    - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" >> docker/development/.env
+    - echo "CLEAN=ok" >> docker/development/.env
+    - echo "SENTRY_ENVIRONMENT=development" >> docker/development/.env
+    - echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL_DEV" >> docker/development/.env
+    - echo "OLD_URL=https://www.brighton.co.id" >> docker/development/.env
+    - echo "CLIENT_ID_NODE=$CLIENT_ID_NODE" >> docker/development/.env
+    - echo "CLIENT_ID=$CLIENT_ID" >> docker/development/.env
+    - echo "NODE_URL=$API_URL_DEV" >> docker/development/.env
+    - echo "API_URL=$API_URL_DEV" >> docker/development/.env
+    - echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> docker/development/.env
+    - echo "API_SECRET_KEY=" >> docker/development/.env
+    - echo "NEXT_PUBLIC_OLD_URL=https://www.brighton.co.id" >> docker/development/.env
+    - echo "CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> docker/development/.env
+    - echo "NEXT_PUBLIC_CLIENT_ID_NODE=$CLIENT_ID_NODE" >> docker/development/.env
+    - echo "NEXT_PUBLIC_CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> docker/development/.env
+    - echo "NEXT_PUBLIC_CLIENT_ID=$CLIENT_ID" >> docker/development/.env
+    - echo "NODE_ENV=development" >> docker/development/.env
+    - echo "NEXT_PUBLIC_ACCESS_TOKEN=$NEXT_PUBLIC_ACCESS_TOKEN" >> docker/development/.env
+    - echo "NEXT_PUBLIC_CLEAN=ok" >> docker/development/.env
+    - echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=$CAPTCHA_SITE_KEY" >> docker/development/.env
+    - echo "NEXT_PUBLIC_BASE_URL=https://bre-fe-dev.brighton.co.id" >> docker/development/.env
+
+
+    # login to artifact registry (shell executor)
+    - docker login -u _json_key --password-stdin $REGION-docker.pkg.dev < ${CI_PROJECT_DIR}/gcloud.json
+
+    # pull updated image
+    - docker compose -f docker-compose.yml pull development
+
+    # restart container
+    - docker compose -f docker-compose.yml up -d development
+
+    # clean old docker data
+    - docker system prune -f
+
+    # cloudflare purge
+    - |
+        curl -X POST https://api.cloudflare.com/client/v4/zones/$ZONE_ID/purge_cache \
+        -H 'Content-Type: application/json' \
+        -H 'Authorization: Bearer $API_CF' \
+        -d '{"hosts":["bre-fe-dev.brighton.co.id"]}'
+  only:
+    - dev
+
+
+# ============================================
+# 🚀 DEPLOY staging (bre-frontend)
+# ============================================
+deploy-staging:
+  stage: deploy-staging
+  tags:
+    - bre-frontend
+  before_script:
+    - echo "$GCLOUD_SERVICE_KEY" | base64 -d > gcloud.json
+    - gcloud auth activate-service-account --key-file=gcloud.json
+    - gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
+  script:
+    # write prod env
+
+    - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" >> docker/production/.env
+    - echo "CLEAN=ok" >> docker/production/.env
+    - echo "SENTRY_ENVIRONMENT=production" >> docker/production/.env
+    - echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" >> docker/production/.env
+    - echo "OLD_URL=https://www.brighton.co.id" >> docker/production/.env
+    - echo "CLIENT_ID_NODE=$CLIENT_ID_NODE" >> docker/production/.env
+    - echo "CLIENT_ID=$CLIENT_ID" >> docker/production/.env
+    - echo "NODE_URL=$API_URL" >> docker/production/.env
+    - echo "API_URL=$API_URL" >> docker/production/.env
+    - echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> docker/production/.env
+    - echo "API_SECRET_KEY=" >> docker/production/.env
+    - echo "NEXT_PUBLIC_OLD_URL=https://www.brighton.co.id" >> docker/production/.env
+    - echo "CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> docker/production/.env
+    - echo "NEXT_PUBLIC_CLIENT_ID_NODE=$CLIENT_ID_NODE" >> docker/production/.env
+    - echo "NEXT_PUBLIC_CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> docker/production/.env
+    - echo "NEXT_PUBLIC_CLIENT_ID=$CLIENT_ID" >> docker/production/.env
+    - echo "NODE_ENV=production" >> docker/production/.env
+    - echo "NEXT_PUBLIC_ACCESS_TOKEN=$NEXT_PUBLIC_ACCESS_TOKEN" >> docker/production/.env
+    - echo "NEXT_PUBLIC_CLEAN=ok" >> docker/production/.env
+    - echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=$CAPTCHA_SITE_KEY" >> docker/production/.env
+    - echo "NEXT_PUBLIC_BASE_URL=https://brighton-site.brighton.co.id" >> docker/production/.env
+    - docker login -u _json_key --password-stdin $REGION-docker.pkg.dev < ${CI_PROJECT_DIR}/gcloud.json
+    - docker compose -f docker-compose.yml pull staging
+    - docker compose -f docker-compose.yml up -d staging
+    - docker system prune -f
+    - |
+        curl -X POST https://api.cloudflare.com/client/v4/zones/$ZONE_ID/purge_cache \
+        -H 'Content-Type: application/json' \
+        -H 'Authorization: Bearer $API_CF' \
+        -d '{"hosts":["bre-fe-staging.brighton.co.id"]}'
+  only:
+    - staging
+
+deploy-production:
+  stage: deploy-production
+  tags:
+    - brighton-site-server
+  before_script:
+    - echo "$GCLOUD_SERVICE_KEY" | base64 -d > gcloud.json
+    - gcloud auth activate-service-account --key-file=gcloud.json
+    - gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
+  script:
+    # write prod env
+
+    - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" >> docker/production/.env
+    - echo "CLEAN=ok" >> docker/production/.env
+    - echo "SENTRY_ENVIRONMENT=production" >> docker/production/.env
+    - echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" >> docker/production/.env
+    - echo "OLD_URL=https://www.brighton.co.id" >> docker/production/.env
+    - echo "CLIENT_ID_NODE=$CLIENT_ID_NODE" >> docker/production/.env
+    - echo "CLIENT_ID=$CLIENT_ID" >> docker/production/.env
+    - echo "NODE_URL=$API_URL" >> docker/production/.env
+    - echo "API_URL=$API_URL" >> docker/production/.env
+    - echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> docker/production/.env
+    - echo "API_SECRET_KEY=" >> docker/production/.env
+    - echo "NEXT_PUBLIC_OLD_URL=https://www.brighton.co.id" >> docker/production/.env
+    - echo "CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> docker/production/.env
+    - echo "NEXT_PUBLIC_CLIENT_ID_NODE=$CLIENT_ID_NODE" >> docker/production/.env
+    - echo "NEXT_PUBLIC_CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> docker/production/.env
+    - echo "NEXT_PUBLIC_CLIENT_ID=$CLIENT_ID" >> docker/production/.env
+    - echo "NODE_ENV=production" >> docker/production/.env
+    - echo "NEXT_PUBLIC_ACCESS_TOKEN=$NEXT_PUBLIC_ACCESS_TOKEN" >> docker/production/.env
+    - echo "NEXT_PUBLIC_CLEAN=ok" >> docker/production/.env
+    - echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=$CAPTCHA_SITE_KEY" >> docker/production/.env
+    - echo "NEXT_PUBLIC_BASE_URL=https://brighton-site.brighton.co.id" >> docker/production/.env
+    - docker login -u _json_key --password-stdin $REGION-docker.pkg.dev < ${CI_PROJECT_DIR}/gcloud.json
+    - docker pull asia-southeast1-docker.pkg.dev/brighton-debc9/brighton-frontend/brighton-frontend-web-frontend:production
+    - docker tag asia-southeast1-docker.pkg.dev/brighton-debc9/brighton-frontend/brighton-frontend-web-frontend:production brighton-frontend-web-frontend:production
+    # - docker stack deploy -c stack.production.yml brighton-frontend
+    - docker stack deploy --with-registry-auth -c stack.production.yml brighton-frontend
+    - docker image prune -af
+    - docker system prune -f
+    - |
+        curl -X POST https://api.cloudflare.com/client/v4/zones/$ZONE_ID/purge_cache \
+        -H 'Content-Type: application/json' \
+        -H 'Authorization: Bearer $API_CF' \
+        -d '{"hosts":["brighton-site.brighton.co.id"]}'
+  only:
+    - master
+
+# storybook_deploy:
+#   stage: storybook
+#   # needs:
+#   #   - ["build-dev"]
+#   tags:
+#     - monitoring-vm
+#   variables:
+#     GIT_STRATEGY: clone
+#   script:
+#     - whoami
+#     - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" > .env
+#     - echo "SENTRY_ENVIRONMENT=development" >> .env
+#     - echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL_DEV" >> .env
+#     - echo "OLD_URL=https://www.brighton.co.id" >> .env
+#     - echo "CLIENT_ID_NODE=$CLIENT_ID_NODE" >> .env
+#     - echo "CLIENT_ID=$CLIENT_ID" >> .env
+#     - echo "NODE_URL=$API_URL_DEV" >> .env
+#     - echo "API_URL=$API_URL_DEV" >> .env
+#     - echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> .env
+#     - echo "NEXT_PUBLIC_ACCESS_TOKEN=$NEXT_PUBLIC_ACCESS_TOKEN" >> .env
+#     - echo "API_SECRET_KEY=" >> .env
+#     - echo "CLEAN=ok" >> .env
+#     - echo "CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> .env
+#     - echo "NEXT_PUBLIC_OLD_URL=https://www.brighton.co.id" >> .env
+#     - echo "NEXT_PUBLIC_CLIENT_ID_NODE=$CLIENT_ID_NODE" >> .env
+#     - echo "NEXT_PUBLIC_CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> .env
+#     - echo "NEXT_PUBLIC_CLIENT_ID=$CLIENT_ID" >> .env
+#     - echo "NODE_ENV=development" >> .env
+#     - echo "NEXT_PUBLIC_ACCESS_TOKEN=$NEXT_PUBLIC_ACCESS_TOKEN" >> .env
+#     - echo "NEXT_PUBLIC_CLEAN=ok" >> .env
+#     - echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=$CAPTCHA_SITE_KEY" >> .env
+#     - export NVM_DIR="/home/mnflrizki/.nvm"
+#     - source "$NVM_DIR/nvm.sh"
+#     - npm install
+#     - npm run build
+#     - npm run build-storybook
+#     - pm2 reload storybook --update-env || pm2 start npm --name "storybook" -- run storybook
+#     - pm2 save
+#     - |
+#         curl -X POST https://api.cloudflare.com/client/v4/zones/$ZONE_ID/purge_cache \
+#         -H 'Content-Type: application/json' \
+#         -H 'Authorization: Bearer $API_CF' \
+#         -d '{
+#           "hosts": [
+#             "docs.brighton.co.id"
+#           ]
+#         }' 
+#   only:
+    # - master
