@@ -6,6 +6,7 @@ import { UserProvider } from "@/components/custom/UserContext";
 import { getUserInfo } from "@/actions/user-action";
 
 import { globalGenerateMetadataOptimal } from "@/lib/global-metadata-optimal";
+import { DEFAULT_RESPONSE } from "@/data/default-response";
 
 export const generateMetadata = globalGenerateMetadataOptimal;
 

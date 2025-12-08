@@ -1,20 +1,33 @@
+version: "3.9"
+
 services:
   production:
-    image: brighton-frontend-web-frontend:production
+    image: asia-southeast1-docker.pkg.dev/brighton-debc9/brighton-frontend/brighton-frontend-web-frontend:production
     ports:
       - "3000:3000"
     env_file:
       - ./docker/production/.env
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/"]   # required endpoint
-      interval: 10s
-      timeout: 5s
-      retries: 50
-      start_period: 120s
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:3000/"]   # required endpoint
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 50
+    #   start_period: 120s
     deploy:
       replicas: 2
+
+      resources:
+        limits:
+          memory: 1.5G
+        reservations:
+          memory: 512M
+
       update_config:
         parallelism: 1
         order: start-first
+
       restart_policy:
-        condition: any
+        condition: on-failure
+        max_attempts: 3
+        delay: 10s
+        window: 60s
