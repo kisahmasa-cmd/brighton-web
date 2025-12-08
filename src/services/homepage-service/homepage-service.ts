@@ -18,6 +18,8 @@ export const getFooters = () => apiFetch<FooterResponse>(`/footers`);
 export const getFooterTabs = (Category: number = 1, Province: string = "", City: string = "", TypeProperty: string = "", TypeTransaction: string = "", Area: string = "") =>
   apiFetch<FooterTabs>(`/toplistproperties`, {
     params: { Category, Province, City, TypeProperty, TypeTransaction, Area },
+    dynamic: false,
+    revalidate: 18000,
   });
 export const getIcons = () => apiFetch<SocialMediaResponse>(`/socialicons`);
 export const getTestimonies = () => apiFetch<TestimoniResponse>(`/testimonies`, { params: { Count: 5, Start: 0, Type: "UMUM" } });

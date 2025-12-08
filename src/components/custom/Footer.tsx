@@ -7,6 +7,7 @@ import { removeBaseUrl } from "../../../utils/removeBaseUrl";
 import { getCurrentSlug } from "../../../utils/getCurrentSlug";
 import { buildPropertySlug } from "../../../utils/buildPropertySlug";
 import { PropertyParams } from "../../../types/property-types";
+import { DEFAULT_RESPONSE } from "@/data/default-response";
 
 interface FooterProps {
   data?: FooterTypes[];
@@ -19,12 +20,21 @@ export default async function Footer({ data, dataIcons }: FooterProps) {
   const dataParams = segments.slice(1);
   const search: PropertyParams = {};
   const { enhancedParams } = await buildPropertySlug(search, dataParams);
-  const dataFooterTabs = await getFooterTabs(1, enhancedParams.ProvinceTitle, enhancedParams.LocationTitle, enhancedParams.Type, typeTransaction, enhancedParams.AreaTitle);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const safe = async (fn: any, ...args: any[]) => {
+    try {
+      return await fn(...args);
+    } catch (e) {
+      console.error("API ERROR:", e);
+      return DEFAULT_RESPONSE;
+    }
+  };
+  const dataFooterTabs = await safe(getFooterTabs, 1, enhancedParams.ProvinceTitle, enhancedParams.LocationTitle, enhancedParams.Type, typeTransaction, enhancedParams.AreaTitle);
   return (
     <footer className="bg-footer text-white pt-12 pb-6">
       <div className="mx-auto px-10">
         {/* Property Tabs - Client Component */}
-        <FooterTabsContainer initialData={dataFooterTabs.Data} />
+        <FooterTabsContainer initialData={dataFooterTabs.Data === undefined ? [] : dataFooterTabs.Data} />
         <div className="border-t border-gray-700 pt-8">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
             {/* Social Media & Certifications */}

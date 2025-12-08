@@ -4,15 +4,17 @@ services:
     container_name: brighton-dev
     ports:
       - "3000:3000"
-    restart: unless-stopped
+    restart: on-failure
     env_file:
       - ./docker/development/.env
+    mem_limit: 256m
 
   staging:
     image: $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/brighton-frontend-web-frontend:staging
     container_name: brighton-staging
     ports:
       - "3001:3000"
-    restart: unless-stopped
+    restart: on-failure
     env_file:
       - ./docker/production/.env
+    mem_limit: 256m
