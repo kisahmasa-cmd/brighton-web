@@ -74,6 +74,7 @@ const nextConfig: NextConfig = {
     return [...staticRedirects, ...dynamicRedirects];
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
