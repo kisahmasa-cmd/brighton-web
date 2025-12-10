@@ -139,11 +139,28 @@ export async function apiFetch<T>(endpoint: string, options?: ApiFetchOptions): 
   });
   const latency = Date.now() - start;
 
+  if (latency > 3000) {
+    const site = process.env.NEXT_PUBLIC_BASE_URL || "Unknown Site";
+
+    await sendErrorToDiscord(`[WARNING] Slow API response (>3s)`, {
+      lateResponse: true,
+      site: site,
+      endpoint,
+      url: urlObj.toString(),
+      latency,
+      request: {
+        method: options?.method,
+        params: options?.params,
+        base: options?.base ?? "api",
+      },
+    });
+  }
+
   if (!res.ok) {
     let result = null;
     result = await res.json();
 
-    const errorMessage = (result && "Message" in result) ? result?.Message?.Text : `API error: ${res.status} ${res.statusText}`;
+    const errorMessage = result && "Message" in result ? result?.Message?.Text : `API error: ${res.status} ${res.statusText}`;
     const site = process.env.NEXT_PUBLIC_BASE_URL || "Unknown Site";
 
     // KIRIM LOG KE DISCORD (PRODUCTION ONLY)
