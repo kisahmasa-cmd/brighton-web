@@ -43,7 +43,7 @@ export default async function Footer({ data, dataIcons }: FooterProps) {
               <div className="flex items-center mx-auto md:mx-0 gap-4">
                 {dataIcons?.map((data) => (
                   <a href={data.URL} aria-label="Social Media" className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-gray-600 transition-colors" key={data.Title}>
-                    <Image width={32} height={32} src={data?.Photo.Original ?? "/empty.png"} alt="icons" className="rounded-full" />
+                    <Image width={32} height={32} src={data?.Photo.SmallWebP ?? data?.Photo?.Small ?? "/empty.png"} alt="icons" className="rounded-full" />
                   </a>
                 ))}
               </div>

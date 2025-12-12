@@ -175,7 +175,13 @@ export default function CardPropertySecondary(props: CardPropertySecondaryProps)
           {agents.map((agent, index) => (
             <div key={index} className="flex-1 flex justify-between items-center gap-1">
               <div className="flex-1 flex justify-center gap-1">
-                <Image src={agent?.Photo.Original ?? "/empty.png"} alt="Gambar Property" className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-full" width="50" height="50"></Image>
+                <Image
+                  src={agent?.Photo.SmallWebP ?? agent?.Photo.Small ?? "/empty.png"}
+                  alt="Gambar Property"
+                  className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-full"
+                  width="50"
+                  height="50"
+                ></Image>
                 <div className="flex-1 flex flex-col justify-center">
                   {agent?.URLSegment ? (
                     <Link href={`/${agent?.URLSegment}`}>

@@ -10,16 +10,9 @@ export default function CardTestimoni({ data }: CardTestimoniProps) {
     <div className="relative border border-gray-200 rounded-xl mt-8 p-6 bg-white shadow-lg h-60 flex flex-col">
       <div className="absolute -top-8 left-6 w-15 h-15 rounded-full bg-primary overflow-hidden flex items-center justify-center flex-shrink-0">
         {data?.Photo?.Medium ? (
-          <Image
-            src={data?.Photo?.Medium}
-            alt="agent photo"
-            className="w-full h-full object-cover"
-            fill
-          />
+          <Image src={data?.Photo?.MediumWebP ?? data?.Photo?.Medium} alt="agent photo" className="w-full h-full object-cover" fill />
         ) : (
-          <p className="w-full h-full font-bold text-3xl flex justify-center items-center">
-            {data?.Nama?.charAt(0)}
-          </p>
+          <p className="w-full h-full font-bold text-3xl flex justify-center items-center">{data?.Nama?.charAt(0)}</p>
         )}
       </div>
 
