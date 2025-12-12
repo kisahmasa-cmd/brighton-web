@@ -21,6 +21,7 @@ import { buildAgentContactSchema } from "@/lib/schema/schema-builder-helper";
 import { schemaOffer } from "@/lib/schema/schema-offer";
 import { schemaProduct } from "@/lib/schema/schema-product";
 import { InjectSchema } from "@/lib/schema/inject-schema";
+import { decodeUnicode } from "../../../../../../utils/decodeUnicode";
 
 type Params = Promise<{ slug: string }>;
 
@@ -268,7 +269,7 @@ const Page: React.FC<PageProps> = async (props) => {
               <h2 className="font-bold text-2xl mb-2">Keterangan</h2>
               <div
                 className="prose prose-lg max-w-none leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: (secondaryData.Other ?? "").replace(/\n/g, "<br/>") }}
+                dangerouslySetInnerHTML={{ __html: decodeUnicode(secondaryData.Other ?? "").replace(/\n/g, "<br/>") }}
                 style={{
                   fontSize: "16px",
                   lineHeight: "1.25",

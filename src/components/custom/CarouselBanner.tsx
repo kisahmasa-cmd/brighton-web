@@ -45,7 +45,7 @@ export default function CarouselBanner({ images = [], showControls = true, data 
                   <Image src={image?.PhotoMobile?.MediumWebP ?? "/empty.png"} alt="Banner" width={800} height={500} priority fetchPriority="high" className="w-full object-cover md:hidden block" />
                 ) : (
                   <Image
-                    src={image.Photo.OriginalWebP ?? "/empty.png"}
+                    src={image.Photo.OriginalWebP ?? image.Photo.Original ?? "/empty.png"}
                     alt="Banner"
                     width={1920}
                     height={420}
