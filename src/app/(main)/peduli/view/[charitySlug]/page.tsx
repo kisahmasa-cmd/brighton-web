@@ -15,28 +15,15 @@ interface CharityDetailPageProps {
   params: Params;
 }
 
-// export async function generateMetadata(props: CharityDetailPageProps): Promise<Metadata> {
-//   const params = await props.params;
-//   const slug = params.charitySlug;
-//   const charity = await getCharityDetail(slug);
-
-//   if (!charity.Data) return {};
-
-//   return {
-//     title: charity.Data.Title,
-//   };
-// }
-
 const CharityDetailPage: React.FC<CharityDetailPageProps> = async (props) => {
   const params = await props.params;
   const charitySlug = params.charitySlug;
-
-  const dataCharity = await getCharityDetail(charitySlug);
   const queryParams: CharitiesParams = {
     Count: 3,
     Page: 1,
   };
-  const dataCharities = await getCharities(queryParams);
+
+  const [dataCharity, dataCharities] = await Promise.all([getCharityDetail(charitySlug), getCharities(queryParams)]);
   const otherCharities = dataCharities.Data.filter((charity) => charity.ID !== dataCharity.Data.ID).slice(0, 2);
 
   return (

@@ -75,16 +75,12 @@ const ArticlesListPage: React.FC<ArticlesListPageProps> = async (props) => {
     Page: page,
     Count: limit,
   };
-
-  const dataArticles = await getArticles(filterData);
+  const [dataArticles, dataCategories, dataTags] = await Promise.all([getArticles(filterData), getArticleCategories(), getArticleTags()]);
   const { pages, totalPages, startPage, endPage } = getPaginationData({
     count: dataArticles.Count,
     limit,
     page,
   });
-
-  const dataCategories = await getArticleCategories();
-  const dataTags = await getArticleTags();
 
   const articleData = dataArticles.Data[0];
   const isCategoryPage = slugs[0] === "category";

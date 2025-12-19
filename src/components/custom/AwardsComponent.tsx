@@ -24,22 +24,15 @@ const getInitials = (name: string) => {
 
 export default async function AwardsComponent({ selectedCategory }: AwardsComponentProps) {
   // Fetch categories and achievements data
-  const categoriesResponse = await getCategoriesAchievement();
+  const [categoriesResponse, achievementsResponse] = await Promise.all([getCategoriesAchievement(), getAchievements(selectedCategory)]);
   const categories = categoriesResponse.Data || [];
 
   // Find current category
   const currentCategory = categories.find((cat) => cat.URLSegment === selectedCategory);
 
   // Fetch achievements for selected category
-  let achievements: AchievementItem[] = [];
-  if (currentCategory) {
-    try {
-      const achievementsData = await getAchievements(selectedCategory);
-      achievements = Array.isArray(achievementsData.Data) ? achievementsData.Data : [];
-    } catch (error) {
-      console.error("Error fetching achievements:", error);
-    }
-  }
+
+  const achievements = Array.isArray(achievementsResponse?.Data) ? achievementsResponse.Data : [];
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">

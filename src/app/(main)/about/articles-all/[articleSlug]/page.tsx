@@ -9,10 +9,8 @@ import { notFound } from "next/navigation";
 import { formatCurrency } from "../../../../../../utils/formatCurrency";
 import PropertyAdsPopupWrapper from "@/components/custom/PropertyAdsPopupWrapper";
 import { getSecondaryPopuler } from "@/services/homepage-service/secondary-new-service";
-import { ArticlesFilterParams } from "../../../../../../types/article-types";
 import LinkAds from "@/components/custom/LinkAds";
 import { HtmlContentDisplay } from "@/components/custom/HtmlContentDisplay";
-import { Metadata } from "next";
 import { removeBaseUrl } from "../../../../../../utils/removeBaseUrl";
 import { buildArticleDetailSchema, buildWebPageSchema } from "@/lib/schema/schema-builder-helper";
 import { InjectSchema } from "@/lib/schema/inject-schema";
@@ -23,19 +21,6 @@ type Params = Promise<{ articleSlug: string }>;
 interface ArticleDetailPageProps {
   params: Params;
 }
-
-// export async function generateMetadata(props: ArticleDetailPageProps): Promise<Metadata> {
-//   const params = await props.params;
-//   const slug = params.articleSlug;
-//   const article = await getArticleDetail(slug);
-
-//   if (!article.Data) return {};
-
-//   return {
-//     title: article.Data.Title,
-//   };
-// }
-
 const ArticleDetailPage: React.FC<ArticleDetailPageProps> = async (props) => {
   const params = await props.params;
   const slug = params.articleSlug;
@@ -49,23 +34,17 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = async (props) => {
 
   const articleBaseURL = `/about/articles-all`;
   const propertyBaseURL = `/cari-properti`;
+  const [categories, articleList, secondaryProperties, primaryProperties] = await Promise.all([
+    getArticleCategories(),
+    getArticles({ Count: 6, Page: 1 }),
+    getSecondaryPopuler(),
+    getPropertyPrimary(),
+  ]);
 
-  const categories = await getArticleCategories();
   const otherCategories = categories.Data.filter((category) => category.URLSegment !== article.Data.Category?.URLSegment);
-
-  const articleListParams: ArticlesFilterParams = {
-    Count: 6,
-    Page: 1,
-  };
-  const articleList = await getArticles(articleListParams);
   const otherArticleList = articleList.Data.filter((other) => other.ID !== article.Data.ID).slice(0, 5);
-
-  const secondaryProperties = await getSecondaryPopuler();
   const propertyRecommendations = secondaryProperties.Data.slice(0, 5);
-
-  const primaryProperties = await getPropertyPrimary();
   const propertyAds = primaryProperties.Data[0];
-
   const contentBody = article.Data.Content.split('<div id="CustomMiddleAds"></div>');
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;

@@ -24,7 +24,7 @@ type ApiFetchOptions = RequestInit & {
 
 export async function apiFetch<T>(endpoint: string, options?: ApiFetchOptions): Promise<T> {
   const start = Date.now();
-  const isDynamic = options?.dynamic ?? isDev;
+  const isDynamic = options?.dynamic || false;
   let baseURL = "";
 
   // Tentukan base URL sesuai base
@@ -126,6 +126,14 @@ export async function apiFetch<T>(endpoint: string, options?: ApiFetchOptions): 
   // uncomment this to debug api request
   // console.log("Fetching API:", urlObj.toString());
   // console.log("body:", { body: bodyToSend });
+  // console.log("header:", options?.headers);
+
+  //check cache
+  // console.log("FETCH MODE:", {
+  //   dynamic: options?.dynamic,
+  //   cache: isDynamic ? "no-store" : "force-cache",
+  //   revalidate: options?.revalidate,
+  // });
 
   const res = await fetch(urlObj.toString(), {
     ...options,

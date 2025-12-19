@@ -14,6 +14,7 @@ interface ApiDataRedirect {
 }
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   async redirects() {
     // 1. Fetch redirects from your API
     let apiRedirects: ApiDataRedirect[] = [];

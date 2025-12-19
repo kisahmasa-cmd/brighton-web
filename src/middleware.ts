@@ -45,19 +45,21 @@ export async function middleware(request: NextRequest) {
 
   const isAgentRoute = pathname.startsWith("/agent");
   const isAgentLoginPage = pathname === "/agent/login" || pathname.startsWith("/agent/login/");
-  const isAgentDashboard = pathname === "/agent/dashboard" || pathname.startsWith("/agent/dashboard/");
+  // const isAgentDashboard = pathname === "/agent/dashboard" || pathname.startsWith("/agent/dashboard/");
+  const dashboardAgentURL = process.env.NEXT_PUBLIC_DASHBOARD_AGENT_URL || "";
 
   // ======================================================
   // 🔥 NEW RULE 1 — Agent login cannot open /visitor/*
   // ======================================================
   if (isVisitorRoute && isLoggedIn && userInfo?.UserType === "AGEN") {
-    return NextResponse.redirect(new URL("/agent/dashboard", request.url));
+    // return NextResponse.redirect(new URL("/agent/dashboard", request.url));
+    return NextResponse.redirect(new URL("/", dashboardAgentURL));
   }
 
   // ======================================================
   // 🔥 NEW RULE 2 — Visitor login cannot open /agent/*
   // ======================================================
-  if ((isAgentDashboard || isAgentLoginPage) && isLoggedIn && userInfo?.UserType === "MEMBER") {
+  if (isAgentLoginPage && isLoggedIn && userInfo?.UserType === "MEMBER") {
     return NextResponse.redirect(new URL("/visitor", request.url));
   }
 
@@ -96,17 +98,8 @@ export async function middleware(request: NextRequest) {
   if (isAgentRoute) {
     if (isAgentLoginPage) {
       if (isLoggedIn && userInfo?.UserType === "AGEN") {
-        return NextResponse.redirect(new URL("/agent/dashboard", request.url));
-      }
-      return response;
-    }
-
-    if (isAgentDashboard) {
-      const verified = await tokenVerify();
-      await manageUserInfoCookie(verified);
-
-      if (!verified || verified?.UserType !== "AGEN") {
-        return NextResponse.redirect(new URL("/agent/login", request.url));
+        // return NextResponse.redirect(new URL("/agent/dashboard", request.url));
+        return NextResponse.redirect(new URL("/", dashboardAgentURL));
       }
       return response;
     }

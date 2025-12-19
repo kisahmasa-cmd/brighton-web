@@ -64,14 +64,20 @@ const PagePropertySecondary = async ({ category, searchParams, types, isNotFound
   let error = "";
 
   try {
-    properties = await getPropertySecondary({
-      ...search,
-      Start: start,
-      Transaction: transaction,
-      Keyword: search.Keyword === undefined ? lastSlug?.replace(/-/g, " ") : search.Keyword,
-    });
-    dataPropertyType = types ?? (await getType());
-    dataNews = await getArticles({ Count: 10, Page: 1 });
+    const [propertiesRes, dataPropertyTypeRes, dataNewsRes] = await Promise.all([
+      getPropertySecondary({
+        ...search,
+        Start: start,
+        Transaction: transaction,
+        Keyword: search.Keyword === undefined ? lastSlug?.replace(/-/g, " ") : search.Keyword,
+      }),
+      types ?? getType(),
+      getArticles({ Count: 10, Page: 1 }),
+    ]);
+
+    properties = propertiesRes;
+    dataPropertyType = dataPropertyTypeRes;
+    dataNews = dataNewsRes;
   } catch (err) {
     error = "Gagal Memuat Data";
     console.error(err);

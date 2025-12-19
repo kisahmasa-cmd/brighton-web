@@ -1,9 +1,4 @@
-import {
-  ArticleCategory,
-  ArticleItem,
-  ArticlesFilterParams,
-  ArticleTag,
-} from "../../types/article-types";
+import { ArticleCategory, ArticleItem, ArticlesFilterParams, ArticleTag } from "../../types/article-types";
 import { ApiResponse } from "../../utils/apiResponse";
 import { apiFetch } from "./api";
 
@@ -12,7 +7,7 @@ export type ArticleCategoriesResponse = ApiResponse<ArticleCategory[]>;
 export type ArticleTagsResponse = ApiResponse<ArticleTag[]>;
 export type ArticleDetailResponse = ApiResponse<ArticleItem>;
 
-export const getArticles = (params?: ArticlesFilterParams) => {
+export const getArticles = (params?: ArticlesFilterParams, NotCache: boolean = true) => {
   return apiFetch<ArticlesResponse>(`/articles`, {
     params: {
       OrderBy: params?.OrderBy === "" ? undefined : params?.OrderBy,
@@ -22,6 +17,7 @@ export const getArticles = (params?: ArticlesFilterParams) => {
       Page: params?.Page,
       Tags: params?.Tags === undefined ? undefined : params?.Tags.join(","),
     },
+    dynamic: NotCache,
   });
 };
 

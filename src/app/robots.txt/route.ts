@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import path from "path";
 
 export async function GET(request: Request) {
-  const isProd = process.env.NODE_ENV === "production";
+  const isProd = process.env.ROBOTS === "false";
   const h = await headers();
 
   const forwardedHost = h.get("x-forwarded-host");
@@ -13,7 +13,7 @@ export async function GET(request: Request) {
 
   const origin = `${proto}://${host}`;
 
-  if (!isProd) {
+  if (isProd) {
     // Development: block all
     return new Response(
       `User-agent: *

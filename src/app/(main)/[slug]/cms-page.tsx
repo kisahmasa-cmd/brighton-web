@@ -7,8 +7,7 @@ import { notFound } from "next/navigation";
 
 export default async function CMSPageContent({ slug }: { slug: string }) {
   try {
-    const dataHtml = await getHtmlCMS(slug);
-    const dataNews = await getArticles({ Count: 10, Page: 1 });
+    const [dataHtml, dataNews] = await Promise.all([getHtmlCMS(slug), getArticles({ Count: 10, Page: 1 })]);
 
     return (
       <div className="p-3">

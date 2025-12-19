@@ -39,6 +39,8 @@ export const getPropertyPrimaryDetail = (urlSegment: string) => {
     base: "old",
     method: "GET",
     params: { IsNewWeb: true },
+    dynamic: false,
+    revalidate: 3600,
   });
 };
 
@@ -84,6 +86,8 @@ export const getDetailPropertySecondary = (slug: string) =>
     base: "old",
     method: "GET",
     params: { IsNewWeb: true },
+    dynamic: false,
+    revalidate: 3600,
   });
 
 export const getRelatedSecondaryProperties = (urlSegment: string) => {

@@ -21,7 +21,7 @@ interface CharityPageProps {
 }
 
 export const metadata: Metadata = {
-  title: 'Brighton Peduli - Bersama Wujudkan Mimpi | Brighton.co.id',
+  title: "Brighton Peduli - Bersama Wujudkan Mimpi | Brighton.co.id",
 };
 
 const CharityPage: React.FC<CharityPageProps> = async (props) => {
@@ -41,8 +41,7 @@ const CharityPage: React.FC<CharityPageProps> = async (props) => {
     queryParams.Category = searchParams.Category;
   }
 
-  const dataCharityCategories = await getCharityCategories();
-  const dataCharities = await getCharities(queryParams);
+  const [dataCharityCategories, dataCharities] = await Promise.all([getCharityCategories(), getCharities(queryParams)]);
   const total = dataCharities.Count;
   const { pages, totalPages, startPage, endPage } = getPaginationData({
     count: total,
@@ -58,14 +57,7 @@ const CharityPage: React.FC<CharityPageProps> = async (props) => {
         <CharitySearch categories={dataCharityCategories.Data} />
         <CharityCardList data={dataCharities.Data} dataTotal={total} />
         {/* pagination */}
-        <PaginationButton
-          page={page}
-          pages={pages}
-          totalPages={totalPages}
-          startPage={startPage}
-          endPage={endPage}
-          hash="BrightonPeduli"
-        />
+        <PaginationButton page={page} pages={pages} totalPages={totalPages} startPage={startPage} endPage={endPage} hash="BrightonPeduli" />
       </section>
       <CharityQuote />
       <CharityDetail />

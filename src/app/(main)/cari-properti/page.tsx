@@ -7,21 +7,6 @@ interface PageProps {
   params: Promise<{ slug?: string[] }>;
   searchParams: Promise<PropertyParams>;
 }
-
-// export async function generateMetadata(props: PageProps): Promise<Metadata> {
-//   const searchParams = await props.searchParams;
-//   const page = searchParams.page;
-
-//   let title = "Cari Properti Baru | Beli Rumah Baru | Beli Apartemen Baru";
-//   if (page && page > 1) {
-//     title = `${title} | Page ${page}`;
-//   }
-
-//   return {
-//     title: title,
-//   };
-// }
-
 export default async function Page({ params, searchParams }: PageProps) {
   const { slug } = await params;
   const search = await searchParams;
