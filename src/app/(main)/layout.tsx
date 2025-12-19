@@ -6,7 +6,6 @@ import { UserProvider } from "@/components/custom/UserContext";
 import { getUserInfo } from "@/actions/user-action";
 
 import { globalGenerateMetadataOptimal } from "@/lib/global-metadata-optimal";
-import UserProviderClient from "@/components/custom/UserProviderClient";
 
 export const generateMetadata = globalGenerateMetadataOptimal;
 
@@ -15,14 +14,14 @@ export default async function MainLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [navRes, footerRes, iconsRes] = await Promise.all([getNav(), getFooters(), getIcons()]);
+  const [navRes, footerRes, iconsRes, user] = await Promise.all([getNav(), getFooters(), getIcons(), getUserInfo()]);
   return (
     <main>
-      <UserProviderClient>
+      <UserProvider value={user}>
         <Navbar nav={navRes.Data} />
         {children}
         <Footer data={footerRes.Data} dataIcons={iconsRes.Data} />
-      </UserProviderClient>
+      </UserProvider>
     </main>
   );
 }
