@@ -23,8 +23,7 @@ export default async function page() {
     }
   };
 
-  const dataNews = await safe(getArticles, { Count: 10, Page: 1 });
-  const dataGlossaries = await safe(getGlossaries);
+  const [dataNews, dataGlossaries] = await Promise.all([safe(getArticles, { Count: 10, Page: 1 }), safe(getGlossaries)]);
 
   return (
     <main className="w-full h-full">

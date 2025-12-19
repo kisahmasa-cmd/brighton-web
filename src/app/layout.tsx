@@ -52,7 +52,7 @@ export default async function RootLayout({
             but keeping them per your request. */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preload" href="/globals.css" as="style" />
+        {/* <link rel="preload" href="/globals.css" as="style" /> */}
         {!isStatic && isAllowedAuto && <InjectSchema data={generateBreadcrumbFromPath(path)} />}
       </head>
 

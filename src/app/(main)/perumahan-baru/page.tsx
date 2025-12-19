@@ -29,14 +29,16 @@ const page = async ({ searchParams }: PageProps) => {
   };
 
   const isOverseas = params?.show === "overseas" ? 1 : 0;
-  const properties: PropertyPrimaryResponse = await safe(getPropertyPrimary, {
-    ...params,
-    Overseas: isOverseas,
-    Start: start,
-    Count: limit,
-  });
-  const dataPropertyType = await safe(getType());
-  const dataDeveloper = await safe(getDeveloper());
+  const [properties, dataPropertyType, dataDeveloper] = await Promise.all([
+    safe(getPropertyPrimary, {
+      ...params,
+      Overseas: isOverseas,
+      Start: start,
+      Count: limit,
+    }),
+    safe(getType),
+    safe(getDeveloper),
+  ]);
 
   const everythingFailed = properties.__error && dataPropertyType.__error && dataDeveloper.__error;
   if (everythingFailed) {

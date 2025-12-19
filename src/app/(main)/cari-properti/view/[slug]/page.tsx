@@ -37,10 +37,14 @@ function toTitleCase(str: string) {
     .join(" ");
 }
 
+async function getDetail(slug: string) {
+  return getDetailPropertySecondary(slug);
+}
+
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const params = await props.params;
   const slug = params.slug;
-  const secondary = await getDetailPropertySecondary(slug);
+  const secondary = await getDetail(slug);
   const data = secondary.Data;
 
   const title = toTitleCase(data?.Title || "Detail Properti Lengkap di Brighton.co.id");
@@ -60,10 +64,10 @@ const Page: React.FC<PageProps> = async (props) => {
   const params = await props.params;
   const slug = params.slug;
 
-  const secondary = await getDetailPropertySecondary(slug);
+  const [secondary, similarProperties] = await Promise.all([getDetail(slug), getRelatedSecondaryProperties(slug)]);
   const secondaryData = secondary.Data;
-  const agent = Array.isArray(secondaryData?.Agent) ? secondaryData.Agent[0] : secondaryData?.Agent;
   if (!secondaryData) notFound();
+  const agent = Array.isArray(secondaryData?.Agent) ? secondaryData.Agent[0] : secondaryData?.Agent;
 
   const agents = [secondaryData.Agent];
   if (secondaryData.Agent2) {
@@ -85,8 +89,6 @@ const Page: React.FC<PageProps> = async (props) => {
     PriceMin: secondaryData.Price ? (secondaryData.Price * 80) / 100 : undefined,
     PriceMax: secondaryData.Price ? (secondaryData.Price * 120) / 100 : undefined,
   });
-
-  const similarProperties = await getRelatedSecondaryProperties(slug);
 
   const title = `${secondaryData.Transaction === "JualSewa" ? "Jual/Sewa" : secondaryData.Transaction} ${secondaryData.Address}`;
   const baseURL = process.env.NEXT_PUBLIC_BASE_URL || "";

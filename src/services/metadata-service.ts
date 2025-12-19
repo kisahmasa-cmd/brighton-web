@@ -21,7 +21,7 @@ export const getMetaData = async (path: string): Promise<MetaDataResult> => {
   try {
     const res = await apiFetch<MetaResponse>(`/seo`, {
       dynamic: false,
-      revalidate: 60,
+      revalidate: 300,
       params: { URL: path },
     });
 

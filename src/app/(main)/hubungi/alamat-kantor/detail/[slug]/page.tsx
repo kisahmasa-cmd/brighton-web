@@ -1,54 +1,5 @@
-import { Metadata } from "next";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { getBusinessUnitBySlug } from "@/services/business-unit-service";
-
-// SEO Metadata
-// export async function generateMetadata({ params }: BusinessUnitDetailProps): Promise<Metadata> {
-//   const { slug } = await params;
-//   const data = await getBusinessUnitBySlug(slug);
-//   const business = data?.Data;
-
-//   if (!business) {
-//     return {
-//       title: "Kantor Tidak Ditemukan | Brighton Circle",
-//       description: "Kantor cabang yang Anda cari tidak ditemukan dalam daftar lokasi Brighton Circle.",
-//     };
-//   }
-
-//   const title = `${business.Name} | Kantor Brighton Circle`;
-//   const description = `Temukan informasi lengkap tentang kantor cabang Brighton Circle ${business.Name}, berlokasi di ${business.Address}. Hubungi kami melalui email ${
-//     business.Email || "resmi kami"
-//   } atau telepon di ${business.Phone || "nomor layanan pelanggan kami"}.`;
-//   const keywords = ["Brighton Circle", "kantor cabang", "agen properti", "Brighton Indonesia", "jual rumah", "sewa properti", business.Name, business.Address].join(", ");
-
-//   return {
-//     title,
-//     description,
-//     keywords,
-//     openGraph: {
-//       title,
-//       description,
-//       type: "website",
-//       url: `https://brighton.co.id/hubungi/alamat-kantor/detail/${slug}`,
-//       // images: [
-//       //   {
-//       //     url: business.Photo || "/default-og-image.jpg",
-//       //     alt: `Kantor Brighton Circle ${business.Name}`,
-//       //   },
-//       // ],
-//       locale: "id_ID",
-//     },
-//     twitter: {
-//       card: "summary_large_image",
-//       title,
-//       description,
-//       // images: [business.Photo || "/default-og-image.jpg"],
-//     },
-//     alternates: {
-//       canonical: `https://brighton.co.id/hubungi/alamat-kantor/detail/${slug}`,
-//     },
-//   };
-// }
 
 interface BusinessUnitDetailProps {
   params: Promise<{ slug: string }>;

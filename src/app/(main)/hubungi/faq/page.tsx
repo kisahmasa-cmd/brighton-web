@@ -7,7 +7,7 @@ import IstilahKPRWrapper from "@/components/custom/GlossariesWrapper";
 import { getFAQCategories, getFAQList, getSearchFAQList } from "@/services/faq-service";
 import { getGlossaries } from "@/services/glossaries-service";
 import React from "react";
-import { FAQCategoriesParams, FAQListParams } from "../../../../../types/faq-types";
+import { FAQCategoriesParams, FAQCategoryData, FAQListParams } from "../../../../../types/faq-types";
 import { Metadata } from "next";
 import { schemaFAQ } from "@/lib/schema/schema-faq";
 import { InjectSchema } from "@/lib/schema/inject-schema";
@@ -25,22 +25,25 @@ interface PageProps {
 }
 
 const page = async (props: PageProps) => {
-  const dataFAQCategories = await getFAQCategories();
-  const dataGlossaries = await getGlossaries();
-  const dataFAQMostSearchTopics = await getFAQList();
-
   // Search
   const searchParams = await props.searchParams;
   const keyword = searchParams.keyword;
+
+  const [dataFAQCategories, dataGlossaries, dataFAQMostSearchTopics] = await Promise.all([getFAQCategories(), getGlossaries(), getFAQList()]);
+
   const searchFAQListParam: FAQListParams = {
     Keyword: keyword,
   };
-  const dataSearchFaqs = await getSearchFAQList(searchFAQListParam);
   const searchFAQCategoriesParam: FAQCategoriesParams = {
     Keyword: keyword,
   };
-  const dataSearchFaqCategories = await getFAQCategories(searchFAQCategoriesParam);
-  const searchData = [...dataSearchFaqs.Data, ...dataSearchFaqCategories.Data.filter((item) => (item.Faqs ?? []).length > 0)];
+
+  let searchData: FAQCategoryData[] = [];
+
+  if (keyword) {
+    const [dataSearchFaqs, dataSearchFaqCategories] = await Promise.all([getSearchFAQList(searchFAQListParam), getFAQCategories(searchFAQCategoriesParam)]);
+    searchData = [...dataSearchFaqs.Data, ...dataSearchFaqCategories.Data.filter((item) => (item.Faqs ?? []).length > 0)];
+  }
 
   //schema
   let faqSchema = null;

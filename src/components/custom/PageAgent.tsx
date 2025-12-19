@@ -14,9 +14,7 @@ interface AgentPageBaseProps {
 }
 
 export default async function AgentPageBase({ searchParams, citySlug, officeSlug }: AgentPageBaseProps) {
-  const dataListCity = await getListCityAgent();
-  const dataListOffices = await getListOffice();
-  const dataCity = await getCityAgent();
+  const [dataListCity, dataListOffices, dataCity] = await Promise.all([getListCityAgent(), getListOffice(), getCityAgent()]);
   const search = (await searchParams) || {};
 
   const page = Number(search.page) || 1;

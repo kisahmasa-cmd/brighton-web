@@ -40,6 +40,7 @@ before_script:
   - echo "NODE_URL=$API_URL_DEV" >> .env
   - echo "API_URL=$API_URL_DEV" >> .env
   - echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> .env
+  - echo "ROBOTS=false" >> .env
   - echo "NEXT_PUBLIC_ACCESS_TOKEN=$NEXT_PUBLIC_ACCESS_TOKEN" >> .env
   - echo "API_SECRET_KEY=" >> .env
   - echo "CLEAN=ok" >> .env
@@ -53,12 +54,16 @@ before_script:
   - echo "NEXT_PUBLIC_CLEAN=ok" >> .env
   - echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=$CAPTCHA_SITE_KEY" >> .env
   - echo "NEXT_PUBLIC_BASE_URL=https://bre-fe-dev.brighton.co.id" >> .env
+  - echo "NEXT_PUBLIC_APP_DOMAIN=bre-fe-dev.brighton.co.id" >> .env
+  - echo "COOKIE_DOMAIN=.brighton.co.id" >> .env
+  - echo "NEXT_PUBLIC_DASHBOARD_AGENT_URL=https://bre-agent-dev.brighton.co.id" >> .env
  # - node -e "['NEXT_PUBLIC_API_URL_DEV','API_URL_DEV'].forEach(k=>{if(!process.env[k]){throw new Error(k+' is missing')}})"
 
 
 .build_env_staging: &build_env_staging
   - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" > .env
   - echo "SENTRY_ENVIRONMENT=production" >> .env
+  - echo "ROBOTS=false" >> .env
   - echo "CLEAN=ok" >> .env
   - echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" >> .env
   - echo "OLD_URL=https://www.brighton.co.id" >> .env
@@ -77,10 +82,14 @@ before_script:
   - echo "NEXT_PUBLIC_CLEAN=ok" >> .env
   - echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=$CAPTCHA_SITE_KEY" >> .env
   - echo "NEXT_PUBLIC_BASE_URL=https://brighton-site.brighton.co.id" >> .env
+  - echo "NEXT_PUBLIC_APP_DOMAIN=bre-fe-staging.brighton.co.id" >> .env
+  - echo "COOKIE_DOMAIN=.brighton.co.id" >> .env
+  - echo "NEXT_PUBLIC_DASHBOARD_AGENT_URL=https://bre-agent-staging.brighton.co.id" >> .env
 
 .build_env_prod: &build_env_prod
   - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" > .env
   - echo "SENTRY_ENVIRONMENT=production" >> .env
+  - echo "ROBOTS=false" >> .env
   - echo "CLEAN=ok" >> .env
   - echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" >> .env
   - echo "OLD_URL=https://www.brighton.co.id" >> .env
@@ -99,6 +108,9 @@ before_script:
   - echo "NEXT_PUBLIC_CLEAN=ok" >> .env
   - echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=$CAPTCHA_SITE_KEY" >> .env
   - echo "NEXT_PUBLIC_BASE_URL=https://brighton-site.brighton.co.id" >> .env
+  - echo "NEXT_PUBLIC_APP_DOMAIN=brighton-site.brighton.co.id" >> .env
+  - echo "COOKIE_DOMAIN=.brighton.co.id" >> .env
+  - echo "NEXT_PUBLIC_DASHBOARD_AGENT_URL=https://brighton-agent-site.brighton.co.id" >> .env
 
  # - node -e "['NEXT_PUBLIC_API_URL','API_URL'].forEach(k=>{if(!process.env[k]){throw new Error(k+' is missing')}})"
 
@@ -163,6 +175,7 @@ deploy-dev:
   script:
     # write env vars into docker/development/.env
     - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" >> docker/development/.env
+    - echo "ROBOTS=false" >> docker/development/.env
     - echo "CLEAN=ok" >> docker/development/.env
     - echo "SENTRY_ENVIRONMENT=development" >> docker/development/.env
     - echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL_DEV" >> docker/development/.env
@@ -183,7 +196,9 @@ deploy-dev:
     - echo "NEXT_PUBLIC_CLEAN=ok" >> docker/development/.env
     - echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=$CAPTCHA_SITE_KEY" >> docker/development/.env
     - echo "NEXT_PUBLIC_BASE_URL=https://bre-fe-dev.brighton.co.id" >> docker/development/.env
-
+    - echo "NEXT_PUBLIC_APP_DOMAIN=bre-fe-dev.brighton.co.id" >> docker/development/.env 
+    - echo "COOKIE_DOMAIN=.brighton.co.id" >> docker/development/.env
+    - echo "NEXT_PUBLIC_DASHBOARD_AGENT_URL=https://bre-agent-dev.brighton.co.id" >> docker/development/.env
 
     # login to artifact registry (shell executor)
     - docker login -u _json_key --password-stdin $REGION-docker.pkg.dev < ${CI_PROJECT_DIR}/gcloud.json
@@ -193,9 +208,11 @@ deploy-dev:
 
     # restart container
     - docker compose -f docker-compose.yml up -d development
+    
+    - docker image prune -af
 
     # clean old docker data
-    - docker system prune -f
+    - docker system prune -af
 
     # cloudflare purge
     - |
@@ -222,6 +239,7 @@ deploy-staging:
     # write prod env
 
     - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" >> docker/production/.env
+    - echo "ROBOTS=false" >> docker/production/.env
     - echo "CLEAN=ok" >> docker/production/.env
     - echo "SENTRY_ENVIRONMENT=production" >> docker/production/.env
     - echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" >> docker/production/.env
@@ -242,10 +260,14 @@ deploy-staging:
     - echo "NEXT_PUBLIC_CLEAN=ok" >> docker/production/.env
     - echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=$CAPTCHA_SITE_KEY" >> docker/production/.env
     - echo "NEXT_PUBLIC_BASE_URL=https://brighton-site.brighton.co.id" >> docker/production/.env
+    - echo "NEXT_PUBLIC_APP_DOMAIN=bre-fe-staging.brighton.co.id" >> docker/production/.env 
+    - echo "COOKIE_DOMAIN=.brighton.co.id" >> docker/production/.env
+    - echo "NEXT_PUBLIC_DASHBOARD_AGENT_URL=https://bre-agent-staging.brighton.co.id" >> docker/production/.env
     - docker login -u _json_key --password-stdin $REGION-docker.pkg.dev < ${CI_PROJECT_DIR}/gcloud.json
     - docker compose -f docker-compose.yml pull staging
     - docker compose -f docker-compose.yml up -d staging
-    - docker system prune -f
+    - docker image prune -af
+    - docker system prune -af
     - |
         curl -X POST https://api.cloudflare.com/client/v4/zones/$ZONE_ID/purge_cache \
         -H 'Content-Type: application/json' \
@@ -266,6 +288,7 @@ deploy-production:
     # write prod env
 
     - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" >> docker/production/.env
+    - echo "ROBOTS=false" >> docker/production/.env
     - echo "CLEAN=ok" >> docker/production/.env
     - echo "SENTRY_ENVIRONMENT=production" >> docker/production/.env
     - echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" >> docker/production/.env
@@ -286,13 +309,16 @@ deploy-production:
     - echo "NEXT_PUBLIC_CLEAN=ok" >> docker/production/.env
     - echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=$CAPTCHA_SITE_KEY" >> docker/production/.env
     - echo "NEXT_PUBLIC_BASE_URL=https://brighton-site.brighton.co.id" >> docker/production/.env
+    - echo "NEXT_PUBLIC_APP_DOMAIN=brighton-site.brighton.co.id" >> docker/production/.env 
+    - echo "COOKIE_DOMAIN=.brighton.co.id" >> docker/production/.env
+    - echo "NEXT_PUBLIC_DASHBOARD_AGENT_URL=https://brighton-agent-site.brighton.co.id" >> docker/production/.env
     - docker login -u _json_key --password-stdin $REGION-docker.pkg.dev < ${CI_PROJECT_DIR}/gcloud.json
     - docker pull asia-southeast1-docker.pkg.dev/brighton-debc9/brighton-frontend/brighton-frontend-web-frontend:production
     - docker tag asia-southeast1-docker.pkg.dev/brighton-debc9/brighton-frontend/brighton-frontend-web-frontend:production brighton-frontend-web-frontend:production
     # - docker stack deploy -c stack.production.yml brighton-frontend
     - docker stack deploy --with-registry-auth -c stack.production.yml brighton-frontend
     - docker image prune -af
-    - docker system prune -f
+    - docker system prune -af
     - |
         curl -X POST https://api.cloudflare.com/client/v4/zones/$ZONE_ID/purge_cache \
         -H 'Content-Type: application/json' \
@@ -301,52 +327,34 @@ deploy-production:
   only:
     - master
 
-# storybook_deploy:
-#   stage: storybook
-#   # needs:
-#   #   - ["build-dev"]
-#   tags:
-#     - monitoring-vm
-#   variables:
-#     GIT_STRATEGY: clone
-#   script:
-#     - whoami
-#     - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" > .env
-#     - echo "SENTRY_ENVIRONMENT=development" >> .env
-#     - echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL_DEV" >> .env
-#     - echo "OLD_URL=https://www.brighton.co.id" >> .env
-#     - echo "CLIENT_ID_NODE=$CLIENT_ID_NODE" >> .env
-#     - echo "CLIENT_ID=$CLIENT_ID" >> .env
-#     - echo "NODE_URL=$API_URL_DEV" >> .env
-#     - echo "API_URL=$API_URL_DEV" >> .env
-#     - echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> .env
-#     - echo "NEXT_PUBLIC_ACCESS_TOKEN=$NEXT_PUBLIC_ACCESS_TOKEN" >> .env
-#     - echo "API_SECRET_KEY=" >> .env
-#     - echo "CLEAN=ok" >> .env
-#     - echo "CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> .env
-#     - echo "NEXT_PUBLIC_OLD_URL=https://www.brighton.co.id" >> .env
-#     - echo "NEXT_PUBLIC_CLIENT_ID_NODE=$CLIENT_ID_NODE" >> .env
-#     - echo "NEXT_PUBLIC_CLIENT_ID_EXPRESSJS=$CLIENT_ID_EXPRESSJS" >> .env
-#     - echo "NEXT_PUBLIC_CLIENT_ID=$CLIENT_ID" >> .env
-#     - echo "NODE_ENV=development" >> .env
-#     - echo "NEXT_PUBLIC_ACCESS_TOKEN=$NEXT_PUBLIC_ACCESS_TOKEN" >> .env
-#     - echo "NEXT_PUBLIC_CLEAN=ok" >> .env
-#     - echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=$CAPTCHA_SITE_KEY" >> .env
-#     - export NVM_DIR="/home/mnflrizki/.nvm"
-#     - source "$NVM_DIR/nvm.sh"
-#     - npm install
-#     - npm run build
-#     - npm run build-storybook
-#     - pm2 reload storybook --update-env || pm2 start npm --name "storybook" -- run storybook
-#     - pm2 save
-#     - |
-#         curl -X POST https://api.cloudflare.com/client/v4/zones/$ZONE_ID/purge_cache \
-#         -H 'Content-Type: application/json' \
-#         -H 'Authorization: Bearer $API_CF' \
-#         -d '{
-#           "hosts": [
-#             "docs.brighton.co.id"
-#           ]
-#         }' 
-#   only:
-    # - master
+storybook_deploy:
+  stage: storybook
+  needs:
+    - ["build-development"]
+  tags:
+    - monitoring-vm
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - whoami
+    - cd /home/mnflrizki/brighton-frontend-web
+    - git reset --hard
+    - git pull origin dev
+    - export NVM_DIR="/home/mnflrizki/.nvm"
+    - source "$NVM_DIR/nvm.sh"
+    - npm install
+    # - npm run build
+    - npm run build-storybook
+    - pm2 reload storybook --update-env || pm2 start npm --name "storybook" -- run storybook --max-memory-restart 700M
+    - pm2 save
+    - |
+        curl -X POST https://api.cloudflare.com/client/v4/zones/$ZONE_ID/purge_cache \
+        -H 'Content-Type: application/json' \
+        -H 'Authorization: Bearer $API_CF' \
+        -d '{
+          "hosts": [
+            "docs.brighton.co.id"
+          ]
+        }' 
+  only:
+    - dev

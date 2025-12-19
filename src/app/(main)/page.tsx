@@ -1,16 +1,12 @@
-// app/page.tsx (atau wherever your page.tsx is)
 import HomeHeader from "@/components/custom/HomeHeader";
 import HomeDynamicSections from "@/components/custom/HomeDynamicSections";
 import { getArticles } from "@/services/article-service";
 import { getBannerHero, getShortcuts, getTestimonies } from "@/services/homepage-service/homepage-service";
 import { getPropertyPrimary, getSecondaryNew, getSecondaryPopuler } from "@/services/homepage-service/secondary-new-service";
 import { InjectSchema } from "@/lib/schema/inject-schema";
-import { schemaHomepage } from "@/lib/schema/schema-homepage";
 import { buildHomepageSchema } from "@/lib/schema/schema-builder-helper";
 import { DEFAULT_RESPONSE } from "@/data/default-response";
 import NotFound from "@/components/custom/NotFound";
-
-export const revalidate = 60; // cache 60 detik
 
 export default async function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -22,13 +18,15 @@ export default async function Home() {
       return DEFAULT_RESPONSE;
     }
   };
-  const dataNews = await safe(getArticles, { Count: 10, Page: 1 });
-  const dataNewSecondary = await safe(getSecondaryNew);
-  const dataNewPrimary = await safe(getPropertyPrimary);
-  const dataPopulerSecondary = await safe(getSecondaryPopuler);
-  const dataServiceMenu = await safe(getShortcuts);
-  const dataTestimonies = await safe(getTestimonies);
-  const dataBannerImage = await safe(getBannerHero);
+  const [dataNews, dataNewSecondary, dataNewPrimary, dataPopulerSecondary, dataServiceMenu, dataTestimonies, dataBannerImage] = await Promise.all([
+    safe(getArticles, { Count: 10, Page: 1 }, false),
+    safe(getSecondaryNew, false),
+    safe(getPropertyPrimary, false),
+    safe(getSecondaryPopuler, false),
+    safe(getShortcuts, false),
+    safe(getTestimonies, false),
+    safe(getBannerHero, false),
+  ]);
 
   const everythingFailed =
     dataNews === DEFAULT_RESPONSE &&

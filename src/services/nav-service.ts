@@ -14,4 +14,4 @@ export type NavResponse = ApiResponse<{
   MainNav: NavItem[];
 }>;
 
-export const getNav = (clientId?: string) => apiFetch<NavResponse>(`/home/activenav`, { dynamic: false, revalidate: 60 });
+export const getNav = (clientId?: string) => apiFetch<NavResponse>(`/home/activenav`, { dynamic: false, revalidate: 3600 });

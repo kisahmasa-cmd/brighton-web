@@ -19,13 +19,13 @@ export default async function AgentDetailContent({ params, searchParams }: Agent
   try {
     const param = await params;
     const slug = param.slug;
-    const data = await getAgentDetail(slug);
     const search = await searchParams;
     const page = Number(search?.page) || 1;
     const limit = 12;
     const start = (page - 1) * limit;
+
+    const [data, headersList] = await Promise.all([getAgentDetail(slug), headers()]);
     const properties: PropertyResponse = await getPropertySecondary({ ...search, Start: start, AgentID: data.Data.ID });
-    const headersList = await headers();
     const proto = headersList.get("x-forwarded-proto") || "https";
     const host = headersList.get("host") || "";
     const fullUrl = `${proto}://${host}${headersList.get("x-pathname") || ""}`;
