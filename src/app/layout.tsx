@@ -9,6 +9,7 @@ import { headers } from "next/headers";
 import { AUTO_BREADCRUMB_ALLOWED, STATIC_BREADCRUMB_PATHS } from "@/lib/schema/breadcrumb-config";
 import { InjectSchema } from "@/lib/schema/inject-schema";
 import { generateBreadcrumbFromPath } from "@/lib/schema/generate-breadcrumb-from-path";
+import LoadAnalyticsOnInteraction from "@/components/custom/LoadAnalyticsOnInteraction";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -47,7 +48,7 @@ export default async function RootLayout({
     <html lang="en">
       <head>
         {/*ADD GTM COMPONENT */}
-        <GoogleTagManager gtmId={GTM_ID} />
+        {/* <GoogleTagManager gtmId={GTM_ID} /> */}
         {/* Note: standard Next.js fonts usually don't need these manual link tags, 
             but keeping them per your request. */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
@@ -65,11 +66,12 @@ export default async function RootLayout({
         `}
       >
         <NextTopLoader color="#facc15" showSpinner={false} height={4} />
+        <LoadAnalyticsOnInteraction gtmId={GTM_ID} gaId={GA_ID} />
         {children}
         <ToasterClient />
 
         {/*ADD GA4 COMPONENT HERE */}
-        <GoogleAnalytics gaId={GA_ID} />
+        {/* <GoogleAnalytics gaId={GA_ID} /> */}
       </body>
     </html>
   );
