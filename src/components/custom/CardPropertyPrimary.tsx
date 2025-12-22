@@ -11,6 +11,8 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useState } from "react";
 import AgentContactPopup from "./AgentContactPopup";
 import { removeBaseUrl } from "../../../utils/removeBaseUrl";
+import { saveActivityLog } from "@/services/activity-log-service";
+import { useUser } from "./UserContext";
 
 interface CardPropertyPrimaryProps {
   data?: Property;
@@ -19,6 +21,7 @@ interface CardPropertyPrimaryProps {
 
 export default function CardPropertyPrimary({ data, isListing }: CardPropertyPrimaryProps) {
   const [isAgentContactPopupOpen, setIsAgentContactPopupOpen] = useState(false);
+  const userInfo = useUser();
 
   const prices = (property?: Property) => {
     if (!property) {
@@ -41,7 +44,23 @@ export default function CardPropertyPrimary({ data, isListing }: CardPropertyPri
   return (
     <>
       <div className="w-full rounded-2xl overflow-hidden shadow-lg bg-white">
-        <Link href={link} className="w-full">
+        <Link
+          href={link}
+          className="w-full"
+          onClick={() => {
+            saveActivityLog({
+              Action: "View",
+              UserID: userInfo?.UserID ?? "",
+              UserName: userInfo?.Name ?? "",
+              UserType: userInfo?.UserType === "AGEN" ? "Agent" : "Visitor",
+              RefURL: data?.Link ?? "",
+              RefID: data?.IDCode ?? "",
+              RefType: "PropertyData",
+              ContactType: "Website",
+              Source: "Website",
+            });
+          }}
+        >
           <div className={`relative bg-gray-200 ${isListing ? "aspect-8/5" : "aspect-4/3"}`}>
             <Image src={data?.Photo?.Medium ?? "/empty.png"} alt={data?.Photo?.Title ?? `${data?.Title} Photo`} className="w-full h-full object-cover" width={0} height={0} sizes="100vw" />
           </div>

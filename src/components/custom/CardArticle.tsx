@@ -2,6 +2,8 @@ import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import Link from "next/link";
 import { ArticleItem } from "../../../types/article-types";
+import { saveActivityLog } from "@/services/activity-log-service";
+import { useUser } from "./UserContext";
 
 interface CardArticleProps {
   data?: ArticleItem;
@@ -10,6 +12,7 @@ interface CardArticleProps {
 
 export default function CardArticle(props: CardArticleProps) {
   const dataArticle = props.data;
+  const userInfo = useUser();
   let articlePhoto = "/dummy-article-photo.jpg";
 
   if (dataArticle?.Photo) {
@@ -17,7 +20,23 @@ export default function CardArticle(props: CardArticleProps) {
   }
 
   return (
-    <Link href={`/about/articles-all/${dataArticle?.URLSegment ?? "#"}`} className="w-full block group relative rounded-2xl overflow-hidden shadow-lg h-full">
+    <Link
+      href={`/about/articles-all/${dataArticle?.URLSegment ?? "#"}`}
+      onClick={() => {
+        saveActivityLog({
+          Action: "View",
+          UserID: userInfo?.UserID ?? "",
+          UserName: userInfo?.Name ?? "",
+          UserType: userInfo?.UserType === "AGEN" ? "Agent" : "Visitor",
+          RefURL: `/about/articles-all/${dataArticle?.URLSegment ?? ""}`,
+          RefID: dataArticle?.ID?.toString() ?? "",
+          RefType: "ArticleData",
+          ContactType: "Website",
+          Source: "Website",
+        });
+      }}
+      className="w-full block group relative rounded-2xl overflow-hidden shadow-lg h-full"
+    >
       {dataArticle?.Category?.Name && <Badge className="absolute top-2 left-2.5 bg-primary text-black text-xs font-semibold uppercase rounded-full">{dataArticle?.Category?.Name}</Badge>}
       <Image src={articlePhoto} alt="Photo" width={1200} height={600} className="w-full aspect-2/1 object-cover" />
 

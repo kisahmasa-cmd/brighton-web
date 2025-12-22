@@ -11,6 +11,7 @@ import { Agent } from "../../../types/agent-types";
 import { useUser } from "./UserContext";
 import { getWAVerifikasi } from "../../../utils/getWA";
 import { generateWhatsAppMessage } from "@/app/action/generateWhatsAppMessage";
+import { saveActivityLog } from "@/services/activity-log-service";
 
 interface AgentAdsPopupProps {
   data: Agent;
@@ -36,6 +37,20 @@ const AgentAdsPopup: React.FC<AgentAdsPopupProps> = ({ data, onReady, IDCodeWA, 
   }
 
   async function handleClickButton() {
+    saveActivityLog({
+      Action: "Contact",
+      UserContact: data.WAPhone ?? "",
+      UserID: userInfo?.UserID?.toString() ?? "",
+      UserType: userInfo?.UserType === "AGEN" ? "Agent" : "Visitor",
+      UserName: userInfo?.Name ?? "",
+      RefURL: LinkWA ?? "",
+      RefID: IDCodeWA ?? "",
+      ContactType: "WhatsApp",
+      Source: "Website",
+      ContactID: data.ID?.toString() ?? "",
+      Contact: data.WAPhone ?? "",
+      RefType: "PropertyData",
+    });
     handleSuccess();
   }
 

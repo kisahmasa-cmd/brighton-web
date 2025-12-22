@@ -19,6 +19,7 @@ import { sendWA } from "../../../utils/sendWA";
 import { getWAVerifikasi } from "../../../utils/getWA";
 import { useUser } from "./UserContext";
 import { generateWhatsAppMessage } from "@/app/action/generateWhatsAppMessage";
+import { saveActivityLog } from "@/services/activity-log-service";
 
 interface CardPropertySecondaryProps {
   data?: Property;
@@ -71,6 +72,21 @@ export default function CardPropertySecondary(props: CardPropertySecondaryProps)
   function handleClickButton({ agent, isWA }: ClickContactButtonProps) {
     setSelectedAgent(agent);
     setIsSelectedWA(isWA);
+
+    saveActivityLog({
+      Action: "Contact",
+      UserContact: isWA ? agent.WAPhone : agent.Phone,
+      UserID: userInfo?.UserID?.toString() ?? "",
+      UserType: userInfo?.UserType === "AGEN" ? "Agent" : "Visitor",
+      UserName: userInfo?.Name ?? "",
+      RefURL: data?.Link ?? "",
+      RefID: data?.IDCode ?? "",
+      ContactType: isWA ? "WhatsApp" : "Phone",
+      ContactID: agent.ID?.toString() ?? "",
+      Contact: isWA ? agent.WAPhone : agent.Phone,
+      RefType: "PropertyData",
+      Source: "Website",
+    });
     if (isWA) {
       startTransition(async () => {
         const isAgentUser = userInfo?.UserType === "AGEN";
@@ -107,7 +123,23 @@ export default function CardPropertySecondary(props: CardPropertySecondaryProps)
             return <CarouselImage images={data.Photos} limit={7} />;
           })()}
         </div>
-        <Link href={removeBaseUrl(data?.Link ?? "#")} className="flex flex-col px-4 pt-2 pb-3">
+        <Link
+          href={removeBaseUrl(data?.Link ?? "#")}
+          onClick={() => {
+            saveActivityLog({
+              Action: "View",
+              UserID: userInfo?.UserID ?? "",
+              UserName: userInfo?.Name ?? "",
+              UserType: userInfo?.UserType === "AGEN" ? "Agent" : "Visitor",
+              RefURL: data?.Link ?? "",
+              RefID: data?.IDCode ?? "",
+              RefType: "PropertyData",
+              ContactType: "Website",
+              Source: "Website",
+            });
+          }}
+          className="flex flex-col px-4 pt-2 pb-3"
+        >
           <div className="flex justify-between items-center sm:mb-1 md:mb-0">
             {data?.Type === "Tanah" ? (
               <p className="hidden sm:block flex-1 text-nowrap text-sm md:text-base lg:text-lg">
