@@ -1,3 +1,4 @@
+'use client";';
 import { Button } from "@/components/ui/button";
 import { Phone } from "lucide-react";
 import React, { useState } from "react";
@@ -7,8 +8,8 @@ import { CtaContactAgent } from "../../../types/api-types";
 import { Property } from "../../../types/property-types";
 import AgentContactPopup from "@/components/custom/AgentContactPopup";
 import Link from "next/link";
-import { saveActivityLog } from "@/services/activity-log-service";
 import { useUser } from "./UserContext";
+import { activityLogServer } from "@/services/services-server/activity-log-server";
 
 export default function AgentCardContact({ agent, property }: { agent: Agent; property: Property }) {
   const [selectedAgent, setSelectedAgent] = useState<Agent | undefined>(undefined);
@@ -20,7 +21,7 @@ export default function AgentCardContact({ agent, property }: { agent: Agent; pr
   function handleClickButton({ agent, isWA }: CtaContactAgent) {
     setSelectedAgent(agent);
     setIsSelectedWA(isWA);
-    saveActivityLog({
+    activityLogServer({
       Action: "Contact",
       UserContact: isWA ? agent?.WAPhone : agent?.Phone,
       UserID: userInfo?.UserID ?? "",

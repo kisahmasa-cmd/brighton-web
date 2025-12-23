@@ -13,7 +13,7 @@ import { checkLoginAndVerified } from "@/actions/check-login-action";
 import { getWAVerifikasi } from "../../../utils/getWA";
 import { useUser } from "./UserContext";
 import { generateWhatsAppMessage } from "@/app/action/generateWhatsAppMessage";
-import { saveActivityLog } from "@/services/activity-log-service";
+import { activityLogServer } from "@/services/services-server/activity-log-server";
 
 interface AgentContactPopupProps {
   isFromPrimary: boolean;
@@ -69,7 +69,7 @@ const AgentContactPopup: React.FC<AgentContactPopupProps> = ({
     setAgentID(id);
     setSelectedPhoneNumber(phoneNumber);
 
-    saveActivityLog({
+    activityLogServer({
       Action: "Contact",
       UserContact: phoneNumber,
       UserID: userInfo?.UserID ?? "",

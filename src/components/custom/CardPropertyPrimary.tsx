@@ -11,8 +11,8 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useState } from "react";
 import AgentContactPopup from "./AgentContactPopup";
 import { removeBaseUrl } from "../../../utils/removeBaseUrl";
-import { saveActivityLog } from "@/services/activity-log-service";
 import { useUser } from "./UserContext";
+import { activityLogServer } from "@/services/services-server/activity-log-server";
 
 interface CardPropertyPrimaryProps {
   data?: Property;
@@ -48,7 +48,7 @@ export default function CardPropertyPrimary({ data, isListing }: CardPropertyPri
           href={link}
           className="w-full"
           onClick={() => {
-            saveActivityLog({
+            activityLogServer({
               Action: "View",
               UserID: userInfo?.UserID ?? "",
               UserName: userInfo?.Name ?? "",
