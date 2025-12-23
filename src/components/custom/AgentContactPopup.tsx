@@ -13,6 +13,7 @@ import { checkLoginAndVerified } from "@/actions/check-login-action";
 import { getWAVerifikasi } from "../../../utils/getWA";
 import { useUser } from "./UserContext";
 import { generateWhatsAppMessage } from "@/app/action/generateWhatsAppMessage";
+import { saveActivityLog } from "@/services/activity-log-service";
 
 interface AgentContactPopupProps {
   isFromPrimary: boolean;
@@ -67,6 +68,21 @@ const AgentContactPopup: React.FC<AgentContactPopupProps> = ({
   async function handleClickButton(id: number, phoneNumber: string, isWA: boolean) {
     setAgentID(id);
     setSelectedPhoneNumber(phoneNumber);
+
+    saveActivityLog({
+      Action: "Contact",
+      UserContact: phoneNumber,
+      UserID: userInfo?.UserID ?? "",
+      UserType: userInfo?.UserType === "AGEN" ? "Agent" : "Visitor",
+      UserName: userInfo?.Name ?? "",
+      RefURL: LinkWA ?? "",
+      RefID: IDCodeWA ?? "",
+      ContactType: isWA ? "WhatsApp" : "Phone",
+      Source: "Website",
+      ContactID: id.toString(),
+      Contact: phoneNumber,
+      RefType: "PropertyData",
+    });
 
     const isVerified = await checkLoginAndVerified();
 

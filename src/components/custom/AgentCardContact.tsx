@@ -7,15 +7,33 @@ import { CtaContactAgent } from "../../../types/api-types";
 import { Property } from "../../../types/property-types";
 import AgentContactPopup from "@/components/custom/AgentContactPopup";
 import Link from "next/link";
+import { saveActivityLog } from "@/services/activity-log-service";
+import { useUser } from "./UserContext";
 
 export default function AgentCardContact({ agent, property }: { agent: Agent; property: Property }) {
   const [selectedAgent, setSelectedAgent] = useState<Agent | undefined>(undefined);
   const [isAgentContactPopupOpen, setIsAgentContactPopupOpen] = useState(false);
   const [isSelectedWA, setIsSelectedWA] = useState<boolean>(false);
 
+  const userInfo = useUser();
+
   function handleClickButton({ agent, isWA }: CtaContactAgent) {
     setSelectedAgent(agent);
     setIsSelectedWA(isWA);
+    saveActivityLog({
+      Action: "Contact",
+      UserContact: isWA ? agent?.WAPhone : agent?.Phone,
+      UserID: userInfo?.UserID ?? "",
+      UserType: userInfo?.UserType === "AGEN" ? "Agent" : "Visitor",
+      UserName: userInfo?.Name ?? "",
+      RefURL: property?.Link ?? "",
+      RefID: property?.IDCode ?? "",
+      ContactType: isWA ? "WhatsApp" : "Phone",
+      Source: "Website",
+      ContactID: agent?.ID?.toString() ?? "",
+      Contact: isWA ? agent?.WAPhone : agent?.Phone,
+      RefType: "PropertyData",
+    });
     setIsAgentContactPopupOpen(true);
   }
 

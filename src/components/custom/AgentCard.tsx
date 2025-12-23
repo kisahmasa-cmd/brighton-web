@@ -3,6 +3,8 @@ import Image from "next/image";
 import { Agent } from "../../../types/agent-types";
 import Link from "next/link";
 import { removeBaseUrl } from "../../../utils/removeBaseUrl";
+import { saveActivityLog } from "@/services/activity-log-service";
+import { useUser } from "./UserContext";
 
 interface AgentCardProps {
   data?: Agent;
@@ -10,6 +12,37 @@ interface AgentCardProps {
 }
 
 export default function AgentCard({ data }: AgentCardProps) {
+  const userInfo = useUser();
+  const logView = () => {
+    saveActivityLog({
+      Action: "View",
+      UserID: userInfo?.UserID ?? "",
+      UserName: userInfo?.Name ?? "",
+      UserType: userInfo?.UserType === "AGEN" ? "Agent" : "Visitor",
+      RefURL: data?.URLSegment ? `/${data.URLSegment}` : "",
+      RefID: data?.ID?.toString() ?? "",
+      RefType: "AgentData",
+      ContactType: "Website",
+      Source: "Website",
+    });
+  };
+
+  const logContact = () => {
+    saveActivityLog({
+      Action: "Contact",
+      UserContact: data?.WAPhone ?? "",
+      UserID: userInfo?.UserID ?? "",
+      UserType: userInfo?.UserType === "AGEN" ? "Agent" : "Visitor",
+      UserName: userInfo?.Name ?? "",
+      RefURL: data?.URLSegment ? `/${data.URLSegment}` : "",
+      RefID: data?.ID?.toString() ?? "",
+      RefType: "AgentData",
+      ContactType: "WhatsApp",
+      Source: "Website",
+      ContactID: data?.ID?.toString() ?? "",
+      Contact: data?.WAPhone ?? "",
+    });
+  };
   return (
     <div className="relative rounded-2xl bg-white shadow-lg border">
       {/* Right Logo */}
@@ -17,7 +50,7 @@ export default function AgentCard({ data }: AgentCardProps) {
       {/* Body */}
       <div className="flex flex-col p-4 gap-4 justify-between h-full">
         {/* Top */}
-        <Link href={removeBaseUrl(data?.URLSegment ?? "#")} className="flex flex-row gap-3.5 items-start">
+        <Link href={removeBaseUrl(data?.URLSegment ?? "#")} className="flex flex-row gap-3.5 items-start" onClick={logView}>
           {/* Picture */}
           <Image src={data?.Photo.MediumWebP ?? data?.Photo.Medium ?? "/empty.png"} alt="Agent Picture" width="96" height="96" className="rounded-full w-[80px] lg:w-[96px] h-[80px] lg:h-[96px]" />
           {/* Bio */}
@@ -69,7 +102,7 @@ export default function AgentCard({ data }: AgentCardProps) {
           {/* WA Button */}
           <div className="flex-2">
             <Button size="sm" variant="whatsapp" className="px-2 w-full" asChild>
-              <Link href={`https://wa.me/${data?.WAPhone}`} target="_blank" rel="noreferrer">
+              <Link href={`https://wa.me/${data?.WAPhone}`} target="_blank" rel="noreferrer" onClick={logContact}>
                 <Image src="/whatsapp.svg" alt="Icon WhatsApp" width="15" height="17" className="invert w-4 h-auto" />
                 <span className="hidden xs:inline-flex text-label-xl xs:text-xs font-bold">WhatsApp</span>
               </Link>
@@ -78,7 +111,9 @@ export default function AgentCard({ data }: AgentCardProps) {
         </div>
         {/* Info Button */}
         <Button asChild className="hidden md:flex items-center cursor-pointer font-bold px-1 py-3.5 bg-primary hover:text-gray-950 text-center rounded-xl text-xs">
-          <Link href={removeBaseUrl(data?.URLSegment ?? "#")}>Lihat Info Agen</Link>
+          <Link href={removeBaseUrl(data?.URLSegment ?? "#")} onClick={logView}>
+            Lihat Info Agen
+          </Link>
         </Button>
       </div>
     </div>

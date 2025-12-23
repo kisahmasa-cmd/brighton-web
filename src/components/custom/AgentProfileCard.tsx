@@ -2,6 +2,9 @@ import { Mail } from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { Agent } from "../../../types/agent-types";
+import { saveActivityLog } from "@/services/activity-log-service";
+import { userInfo } from "os";
+import { useUser } from "./UserContext";
 
 interface BadgeProps {
   src: string;
@@ -22,6 +25,7 @@ const Badge = ({ src, label, year }: BadgeProps) => (
 );
 
 const AgentProfileCard = ({ data }: AgentProfileCardProps) => {
+  const userInfo = useUser();
   return (
     <div className="w-full bg-primary p-8">
       <div className="container w-full mx-auto">
@@ -119,6 +123,22 @@ const AgentProfileCard = ({ data }: AgentProfileCardProps) => {
                 <div className="flex flex-col gap-2 w-48">
                   <a href={`https://wa.me/${data?.WAPhone}`} target="_blank" rel="noreferrer">
                     <Button
+                      onClick={() => {
+                        saveActivityLog({
+                          Action: "Contact",
+                          UserContact: data?.WAPhone ?? "",
+                          UserID: userInfo?.UserID ?? "",
+                          UserType: userInfo?.UserType === "AGEN" ? "Agent" : "Visitor",
+                          UserName: userInfo?.Name ?? "",
+                          RefURL: data?.URLSegment ? `/${data.URLSegment}` : "",
+                          RefID: data?.ID?.toString() ?? "",
+                          ContactType: "WhatsApp",
+                          Source: "Website",
+                          ContactID: data?.ID?.toString() ?? "",
+                          Contact: data?.WAPhone ?? "",
+                          RefType: "AgentData",
+                        });
+                      }}
                       size={"lg"}
                       variant={"whatsapp"}
                       className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition shadow-lg"

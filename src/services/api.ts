@@ -5,13 +5,14 @@ const isDev = process.env.NODE_ENV === "development";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL!;
 const OLD_URL = process.env.NEXT_PUBLIC_OLD_URL || process.env.OLD_URL!;
 const NODE_URL = process.env.NODE_URL!;
+const TEMP_URL = process.env.NEXT_PUBLIC_TEMP_URL || process.env.TEMP_URL!;
 
 const ACCESS_TOKEN = process.env.NEXT_PUBLIC_ACCESS_TOKEN || "88250c1a024f2034e1dc5c8c3ea372b3" || process.env.ACCESS_TOKEN!;
 const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID || process.env.CLIENT_ID!;
 const CLIENT_ID_NODE = process.env.NEXT_PUBLIC_CLIENT_ID_NODE || process.env.CLIENT_ID_NODE!;
 
 type ApiFetchOptions = RequestInit & {
-  base?: "api" | "old" | "node"; // pilih base URL
+  base?: "api" | "old" | "node" | "temp"// pilih base URL
   dynamic?: boolean;
   revalidate?: number;
   withClientId?: boolean; // bisa disable client_id
@@ -35,6 +36,9 @@ export async function apiFetch<T>(endpoint: string, options?: ApiFetchOptions): 
       break;
     case "node":
       baseURL = NODE_URL;
+      break;
+    case "temp":
+      baseURL = TEMP_URL;
       break;
     default:
       baseURL = API_URL;
