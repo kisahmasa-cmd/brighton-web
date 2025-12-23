@@ -19,7 +19,7 @@ import { sendWA } from "../../../utils/sendWA";
 import { getWAVerifikasi } from "../../../utils/getWA";
 import { useUser } from "./UserContext";
 import { generateWhatsAppMessage } from "@/app/action/generateWhatsAppMessage";
-import { saveActivityLog } from "@/services/activity-log-service";
+import { activityLogServer } from "@/services/services-server/activity-log-server";
 
 interface CardPropertySecondaryProps {
   data?: Property;
@@ -73,7 +73,7 @@ export default function CardPropertySecondary(props: CardPropertySecondaryProps)
     setSelectedAgent(agent);
     setIsSelectedWA(isWA);
 
-    saveActivityLog({
+    activityLogServer({
       Action: "Contact",
       UserContact: isWA ? agent.WAPhone : agent.Phone,
       UserID: userInfo?.UserID?.toString() ?? "",
@@ -126,7 +126,7 @@ export default function CardPropertySecondary(props: CardPropertySecondaryProps)
         <Link
           href={removeBaseUrl(data?.Link ?? "#")}
           onClick={() => {
-            saveActivityLog({
+            activityLogServer({
               Action: "View",
               UserID: userInfo?.UserID ?? "",
               UserName: userInfo?.Name ?? "",

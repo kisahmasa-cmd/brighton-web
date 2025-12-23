@@ -3,8 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import Link from "next/link";
 import { ArticleItem } from "../../../types/article-types";
-import { saveActivityLog } from "@/services/activity-log-service";
 import { useUser } from "./UserContext";
+import { activityLogServer } from "@/services/services-server/activity-log-server";
 
 interface CardArticleProps {
   data?: ArticleItem;
@@ -24,7 +24,7 @@ export default function CardArticle(props: CardArticleProps) {
     <Link
       href={`/about/articles-all/${dataArticle?.URLSegment ?? "#"}`}
       onClick={() => {
-        saveActivityLog({
+        activityLogServer({
           Action: "View",
           UserID: userInfo?.UserID ?? "",
           UserName: userInfo?.Name ?? "",

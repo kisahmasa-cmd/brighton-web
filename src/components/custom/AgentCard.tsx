@@ -4,8 +4,8 @@ import Image from "next/image";
 import { Agent } from "../../../types/agent-types";
 import Link from "next/link";
 import { removeBaseUrl } from "../../../utils/removeBaseUrl";
-import { saveActivityLog } from "@/services/activity-log-service";
 import { useUser } from "./UserContext";
+import { activityLogServer } from "@/services/services-server/activity-log-server";
 
 interface AgentCardProps {
   data?: Agent;
@@ -15,7 +15,7 @@ interface AgentCardProps {
 export default function AgentCard({ data }: AgentCardProps) {
   const userInfo = useUser();
   const logView = () => {
-    saveActivityLog({
+    activityLogServer({
       Action: "View",
       UserID: userInfo?.UserID ?? "",
       UserName: userInfo?.Name ?? "",
@@ -29,7 +29,7 @@ export default function AgentCard({ data }: AgentCardProps) {
   };
 
   const logContact = () => {
-    saveActivityLog({
+    activityLogServer({
       Action: "Contact",
       UserContact: data?.WAPhone ?? "",
       UserID: userInfo?.UserID ?? "",

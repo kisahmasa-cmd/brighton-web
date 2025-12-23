@@ -3,9 +3,9 @@ import { Mail } from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { Agent } from "../../../types/agent-types";
-import { saveActivityLog } from "@/services/activity-log-service";
 import { userInfo } from "os";
 import { useUser } from "./UserContext";
+import { activityLogServer } from "@/services/services-server/activity-log-server";
 
 interface BadgeProps {
   src: string;
@@ -125,7 +125,7 @@ const AgentProfileCard = ({ data }: AgentProfileCardProps) => {
                   <a href={`https://wa.me/${data?.WAPhone}`} target="_blank" rel="noreferrer">
                     <Button
                       onClick={() => {
-                        saveActivityLog({
+                        activityLogServer({
                           Action: "Contact",
                           UserContact: data?.WAPhone ?? "",
                           UserID: userInfo?.UserID ?? "",
