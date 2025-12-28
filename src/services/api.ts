@@ -146,7 +146,7 @@ export async function apiFetch<T>(endpoint: string, options?: ApiFetchOptions): 
       ...(options?.headers || {}),
     },
     body: bodyToSend,
-    cache: isDynamic ? "no-store" : "force-cache",
+    cache: isDynamic ? "no-store" : "default",
     next: !isDynamic ? { revalidate: options?.revalidate ?? 3600 } : undefined,
   });
   const latency = Date.now() - start;
