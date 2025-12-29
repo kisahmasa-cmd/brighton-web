@@ -25,6 +25,8 @@ import { decodeUnicode } from "../../../../../../utils/decodeUnicode";
 
 type Params = Promise<{ slug: string }>;
 
+export const revalidate = 300; // 5 minutes
+
 interface PageProps {
   params: Params;
 }
