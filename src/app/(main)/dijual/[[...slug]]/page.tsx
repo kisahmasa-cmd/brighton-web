@@ -1,9 +1,9 @@
 import PagePropertySecondary from "@/components/custom/PagePropertySecondary";
 import { PropertyParams } from "../../../../../types/property-types";
 import { buildPropertySlug } from "../../../../../utils/buildPropertySlug";
-import { globalGenerateMetadata } from "@/lib/global-metadata";
-import { getMetaImageFromSeondary } from "@/services/homepage-service/secondary-new-service";
 import { generateSecondaryMetadata } from "../../../../../utils/generateSecondaryMetadata";
+
+export const revalidate = 300; // 5 minutes
 
 interface PageProps {
   params: Promise<{ slug?: string[] }>;

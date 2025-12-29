@@ -1,4 +1,4 @@
-'use client";';
+'use client';
 import { Mail } from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
