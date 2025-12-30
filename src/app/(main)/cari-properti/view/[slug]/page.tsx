@@ -67,7 +67,8 @@ const Page: React.FC<PageProps> = async (props) => {
   const params = await props.params;
   const slug = params.slug;
 
-  const [secondary, similarProperties] = await Promise.all([getDetail(slug), getPropertySecondary({Transaction: "Jual", Count: 10, IsSold: false})]);
+  // const [secondary, similarProperties] = await Promise.all([getDetail(slug), getPropertySecondary({ Transaction: "Jual", Count: 10, IsSold: false })]);
+  const secondary = await getDetail(slug);
   const secondaryData = secondary.Data;
   if (!secondaryData) redirect("/cari-properti");
   const agent = Array.isArray(secondaryData?.Agent) ? secondaryData.Agent[0] : secondaryData?.Agent;
@@ -89,6 +90,17 @@ const Page: React.FC<PageProps> = async (props) => {
     AreaTitle: secondaryData.Area?.Title,
     AreaSlug: secondaryData.Area?.Title ? formatSlug(secondaryData.Area?.Title) : undefined,
     Type: secondaryData.Type,
+    PriceMin: secondaryData.Price ? (secondaryData.Price * 80) / 100 : undefined,
+    PriceMax: secondaryData.Price ? (secondaryData.Price * 120) / 100 : undefined,
+  });
+
+  const similarPropertiesV2 = await getPropertySecondary({
+    Transaction: transaction,
+    Count: 10,
+    Type: secondaryData.Type,
+    ProvinceID: secondaryData.Province?.ID,
+    LocationID: secondaryData.Location?.ID,
+    AreaID: secondaryData.Area?.ID,
     PriceMin: secondaryData.Price ? (secondaryData.Price * 80) / 100 : undefined,
     PriceMax: secondaryData.Price ? (secondaryData.Price * 120) / 100 : undefined,
   });
@@ -329,9 +341,9 @@ const Page: React.FC<PageProps> = async (props) => {
       </div>
 
       {/* Similar Properties */}
-      {similarProperties.Data.length > 0 && (
+      {similarPropertiesV2.Data.length > 0 && (
         <div className="bg-gray-200 px-6 lg:px-16 py-6 ">
-          <PropertySlider data={similarProperties.Data} Title="Properti Serupa" linkBuild={link} />
+          <PropertySlider data={similarPropertiesV2.Data} Title="Properti Serupa" linkBuild={link} />
         </div>
       )}
 
