@@ -3,8 +3,6 @@ import { PropertyParams } from "../../../../../types/property-types";
 import { buildPropertySlug } from "../../../../../utils/buildPropertySlug";
 import { generateSecondaryMetadata } from "../../../../../utils/generateSecondaryMetadata";
 
-export const revalidate = 300; // 5 minutes
-
 interface PageProps {
   params: Promise<{ slug?: string[] }>;
   searchParams: Promise<PropertyParams>;
