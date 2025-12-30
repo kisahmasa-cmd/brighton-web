@@ -14,6 +14,7 @@ export interface ApiResponse<T> {
   Code?: number;
   Pagination?: ApiPagination;
   AccessToken?: string;
+  MobileToken?: string;
 }
 
 export interface ApiPagination {
