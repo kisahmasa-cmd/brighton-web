@@ -18,6 +18,8 @@ import Cookies from "js-cookie";
 import { setServerToken } from "@/actions/token-action";
 import { tokenVerify } from "@/services/token-service/token-verify-service";
 import { manageUserInfoCookie } from "@/actions/user-action";
+import { useSearchParams } from "next/navigation";
+import { AuthTokenData } from "../../../types/token-types";
 
 interface LoginFormProps {
   isMember: boolean;
@@ -37,6 +39,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ isMember, onClose }) => {
   const [isRememberMe, setIsRememberMe] = useState<boolean>(false);
   const [isShowPassword, setIsShowPassword] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const searchParams = useSearchParams();
 
   const getRememberMeLogin = ():RememberMeData => {
     if (!isMember) return {};
@@ -74,8 +78,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ isMember, onClose }) => {
       const result = await login(request);
 
       if (result.Data) {
-        if (result.AccessToken) {
-          await setServerToken(result.AccessToken);
+        if (result.AccessToken && result.MobileToken) {
+          const token: AuthTokenData = {
+            AccessToken: result.AccessToken,
+            MobileToken: result.MobileToken,
+          };
+          await setServerToken(token);
         }
         if (isMember) {
           if (isRememberMe) {
@@ -96,7 +104,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ isMember, onClose }) => {
           throw "Token tidak valid!";
         } else {
           setTimeout(() => {
-            if (verifyResult.UserType === "AGEN") {
+            const redirectURL = searchParams.get("redirect");
+            if (redirectURL) {
+              window.location.href = redirectURL;
+            } else if (verifyResult.UserType === "AGEN") {
               window.location.href = "/agent/dashboard";
             } else {
               if (!verifyResult.IsVerified) {

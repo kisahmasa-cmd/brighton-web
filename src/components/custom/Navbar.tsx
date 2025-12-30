@@ -9,10 +9,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import {Button} from "@/components/ui/button";
-
-import { getServerToken } from "@/actions/token-action";
-
 import NavbarUserMenu from "./NavbarUserMenu";
+import { getUserInfo } from "@/actions/user-action";
 
 interface HomeHeaderProps {
   nav?: {
@@ -22,7 +20,7 @@ interface HomeHeaderProps {
 }
 
 export default async function Navbar({ nav }: HomeHeaderProps) {
-  const isLoggedIn = !!(await getServerToken());
+  const isLoggedIn = !!(await getUserInfo());
 
   const topNavItems = nav?.TopNav;
   const navItems = nav?.MainNav;

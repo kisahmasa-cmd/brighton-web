@@ -13,7 +13,7 @@ export type TestimoniResponse = ApiResponse<TestimoniData[]>;
 export type SocialMediaResponse = ApiResponse<SocialMediaData[]>;
 export type BannerImageResponse = ApiResponse<BannerData[]>;
 
-export const getShortcuts = (NotCache: boolean = true) => apiFetch<ShortcutsResponse>(`/shortcut`, { dynamic: NotCache });
+export const getShortcuts = (NotCache: boolean = true) => apiFetch<ShortcutsResponse>(`/shortcut`, { dynamic: true });
 export const getFooters = () => apiFetch<FooterResponse>(`/footers`);
 export const getFooterProvince = (Province: string = "", City: string = "", TypeProperty: string = "", TypeTransaction: string = "", Area: string = "") =>
   apiFetch<FooterTabs>("/property/total/province", { params: { Province, City, TypeProperty, TypeTransaction, Area }, dynamic: false, revalidate: 300, withClientId: false });
@@ -46,5 +46,5 @@ export const getFooterTabs = async (Category = 1, Province = "", City = "", Type
 };
 
 export const getIcons = () => apiFetch<SocialMediaResponse>(`/socialicons`);
-export const getTestimonies = (NotCache: boolean = true) => apiFetch<TestimoniResponse>(`/testimonies`, { params: { Count: 5, Start: 0, Type: "UMUM" }, dynamic: NotCache });
-export const getBannerHero = (NotCache: boolean = true) => apiFetch<BannerImageResponse>(`/property-api/slideshow`, { base: "old", params: { onlyapp: "onlyapp" }, dynamic: NotCache });
+export const getTestimonies = (NotCache: boolean = true) => apiFetch<TestimoniResponse>(`/testimonies`, { params: { Count: 5, Start: 0, Type: "UMUM" } });
+export const getBannerHero = (NotCache: boolean = true) => apiFetch<BannerImageResponse>(`/property-api/slideshow`, { base: "old", params: { onlyapp: "onlyapp" }, dynamic: true });

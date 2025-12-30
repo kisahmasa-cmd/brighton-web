@@ -1,3 +1,4 @@
+import { getServerToken } from "@/actions/token-action";
 import { sendErrorToDiscord } from "@/lib/discord-logger";
 
 const isDev = process.env.NODE_ENV === "development";
@@ -17,6 +18,7 @@ type ApiFetchOptions = RequestInit & {
   revalidate?: number;
   withClientId?: boolean; // bisa disable client_id
   withAccessToken?: boolean; // bisa disable access_token
+  withBearerToken?: boolean;
   formData?: boolean; // bisa disable content type json
   formDataBody?: FormData;
   formEncoded?: boolean; // pakai application/x-www-form-urlencoded
@@ -25,7 +27,7 @@ type ApiFetchOptions = RequestInit & {
 
 export async function apiFetch<T>(endpoint: string, options?: ApiFetchOptions): Promise<T> {
   const start = Date.now();
-  const isDynamic = options?.dynamic || false;
+  const isDynamic = options?.dynamic || true;
   let baseURL = "";
 
   // Tentukan base URL sesuai base
@@ -128,8 +130,8 @@ export async function apiFetch<T>(endpoint: string, options?: ApiFetchOptions): 
     bodyToSend = urlEncoded.toString();
   }
   // uncomment this to debug api request
-  // console.log("Fetching API:", urlObj.toString());
-  // console.log("body:", { body: bodyToSend });
+  console.log("Fetching API:", urlObj.toString());
+  console.log("body:", { body: bodyToSend });
   // console.log("header:", options?.headers);
 
   //check cache
@@ -139,14 +141,21 @@ export async function apiFetch<T>(endpoint: string, options?: ApiFetchOptions): 
   //   revalidate: options?.revalidate,
   // });
 
+  let bearerAccessToken: string | undefined;
+  if (options?.withBearerToken) {
+    const token = await getServerToken();
+    bearerAccessToken = token?.AccessToken;
+  }
+
   const res = await fetch(urlObj.toString(), {
     ...options,
     headers: {
       ...(options?.formData ? {} : { "Content-Type": "application/json" }),
       ...(options?.headers || {}),
+      ...(options?.withBearerToken ? { Authorization: `Bearer ${bearerAccessToken}` } : {})
     },
     body: bodyToSend,
-    cache: isDynamic ? "no-store" : "force-cache",
+    cache: isDynamic ? "no-store" : "default",
     next: !isDynamic ? { revalidate: options?.revalidate ?? 3600 } : undefined,
   });
   const latency = Date.now() - start;

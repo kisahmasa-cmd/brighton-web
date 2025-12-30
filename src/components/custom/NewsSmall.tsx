@@ -32,7 +32,7 @@ export default function NewsSmall({ data }: NewsSmallProps) {
                     width={0}
                     height={0}
                     sizes="100vw"
-                    className="w-full h-auto bg-center object-cover hover:scale-110 transition-transform duration-300"
+                    className="w-full h-auto aspect-video bg-center object-cover hover:scale-110 transition-transform duration-300"
                   />
                 </div>
                 {/* Article Title & Date */}

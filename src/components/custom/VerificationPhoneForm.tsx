@@ -12,6 +12,7 @@ import { sendOTPCode, verifyOTPCode } from "@/services/otp-service";
 import { UserData } from "../../../types/user-types";
 import { setServerToken } from "@/actions/token-action";
 import { useRouter } from "next/navigation";
+import { AuthTokenData } from "../../../types/token-types";
 
 interface VerificationPhoneFormProps {
   user: UserData;
@@ -86,8 +87,12 @@ const VerificationPhoneForm: React.FC<VerificationPhoneFormProps> = ({
         throw "Gagal verifikasi kode";
       }
 
-      if (result.AccessToken) {
-        await setServerToken(result.AccessToken);
+      if (result.AccessToken && result.MobileToken) {
+        const token: AuthTokenData = {
+          AccessToken: result.AccessToken,
+          MobileToken: result.MobileToken,
+        };
+        await setServerToken(token);
       }
 
       router.refresh();

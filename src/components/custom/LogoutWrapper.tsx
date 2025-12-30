@@ -30,7 +30,7 @@ const LogoutWrapper: React.FC<LogoutWrapperProps> = ({ children, withRemoveCooki
       setIsLoading(true);
       const token = await getServerToken();
       if (token) {
-        const result = await logout(token);
+        const result = await logout();
         if (result?.Message?.Code === 200) {
           if (withRemoveCookie) {
             await removeServerToken();

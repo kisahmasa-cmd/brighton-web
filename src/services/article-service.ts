@@ -17,7 +17,7 @@ export const getArticles = (params?: ArticlesFilterParams, NotCache: boolean = t
       Page: params?.Page,
       Tags: params?.Tags === undefined ? undefined : params?.Tags.join(","),
     },
-    dynamic: NotCache,
+    // dynamic: NotCache,
   });
 };
 

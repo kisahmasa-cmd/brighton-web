@@ -30,6 +30,7 @@ import { setServerToken } from "@/actions/token-action";
 import { useUser } from "./UserContext";
 import { tokenVerify } from "@/services/token-service/token-verify-service";
 import { manageUserInfoCookie } from "@/actions/user-action";
+import { AuthTokenData } from "../../../types/token-types";
 
 // ==================== OTP Timer Component ====================
 interface OTPTimerProps {
@@ -211,8 +212,12 @@ const OTPPopup: React.FC<OTPPopupProps> = ({
         throw new Error("Gagal verifikasi kode");
       }
 
-      if (result.AccessToken) {
-        await setServerToken(result.AccessToken);
+      if (result.AccessToken && result.MobileToken) {
+        const token: AuthTokenData = {
+          AccessToken: result.AccessToken,
+          MobileToken: result.MobileToken,
+        }
+        await setServerToken(token);
         const verifyResult = await tokenVerify();
         await manageUserInfoCookie(verifyResult);
       }

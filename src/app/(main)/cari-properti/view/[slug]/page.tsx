@@ -3,7 +3,7 @@ import DetailListingKPRCalculator from "@/components/custom/DetailListingKPRCalc
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getDetailPropertySecondary, getRelatedSecondaryProperties } from "@/services/property-service";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { formatCurrency, formatCurrencyFull } from "../../../../../../utils/formatCurrency";
 import { formatDate } from "../../../../../../utils/formatDate";
 import ShareDialogButton from "@/components/custom/ShareDialogButton";
@@ -22,8 +22,11 @@ import { schemaOffer } from "@/lib/schema/schema-offer";
 import { schemaProduct } from "@/lib/schema/schema-product";
 import { InjectSchema } from "@/lib/schema/inject-schema";
 import { decodeUnicode } from "../../../../../../utils/decodeUnicode";
+import { getPropertySecondary } from "@/services/homepage-service/secondary-new-service";
 
 type Params = Promise<{ slug: string }>;
+
+export const revalidate = 300; // 5 minutes
 
 interface PageProps {
   params: Params;
@@ -64,9 +67,9 @@ const Page: React.FC<PageProps> = async (props) => {
   const params = await props.params;
   const slug = params.slug;
 
-  const [secondary, similarProperties] = await Promise.all([getDetail(slug), getRelatedSecondaryProperties(slug)]);
+  const [secondary, similarProperties] = await Promise.all([getDetail(slug), getPropertySecondary({Transaction: "Jual", Count: 10, IsSold: false})]);
   const secondaryData = secondary.Data;
-  if (!secondaryData) notFound();
+  if (!secondaryData) redirect("/cari-properti");
   const agent = Array.isArray(secondaryData?.Agent) ? secondaryData.Agent[0] : secondaryData?.Agent;
 
   const agents = [secondaryData.Agent];
@@ -128,7 +131,6 @@ const Page: React.FC<PageProps> = async (props) => {
   });
 
   const multiSchema = [breadcrumb, schemaOfferDetail, schemaPersonAgent, schemaProductDetail];
-
   return (
     <div>
       <InjectSchema data={multiSchema as []} />
@@ -327,9 +329,9 @@ const Page: React.FC<PageProps> = async (props) => {
       </div>
 
       {/* Similar Properties */}
-      {similarProperties.length > 0 && (
+      {similarProperties.Data.length > 0 && (
         <div className="bg-gray-200 px-6 lg:px-16 py-6 ">
-          <PropertySlider data={similarProperties} Title="Properti Serupa" linkBuild={link} />
+          <PropertySlider data={similarProperties.Data} Title="Properti Serupa" linkBuild={link} />
         </div>
       )}
 
