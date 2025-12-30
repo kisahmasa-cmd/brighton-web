@@ -5,6 +5,8 @@ import { getPropertyPrimaryDetailAction } from "@/actions/property-primary-detai
 import { Metadata } from "next";
 import { globalGenerateMetadataOptimal } from "@/lib/global-metadata-optimal";
 
+export const revalidate = 300; // Revalidate every 5 minutes
+
 type Params = Promise<{ slug: string }>;
 
 interface PageProps {

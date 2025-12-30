@@ -12,6 +12,7 @@ import { LoginRequestBody, RegisterRequestBody } from "../../../types/auth-types
 import { login, register } from "@/services/auth-service";
 import TermsConfirmDialog from "./TermsConfirmDialog";
 import { setServerToken } from "@/actions/token-action";
+import { AuthTokenData } from "../../../types/token-types";
 
 interface RegisterFormData {
   name?: string;
@@ -126,8 +127,12 @@ const RegisterPageForm: React.FC<RegisterPageFormProps> = ({ termContent }) => {
 
       if (result.Data) {
         setInputData(null);
-        if (result.AccessToken) {
-          await setServerToken(result.AccessToken);
+        if (result.AccessToken && result.MobileToken) {
+          const token: AuthTokenData = {
+            AccessToken: result.AccessToken,
+            MobileToken: result.MobileToken,
+          };
+          await setServerToken(token);
         }
         setTimeout(() => {
           window.location.href = "/visitor";

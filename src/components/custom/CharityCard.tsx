@@ -19,7 +19,7 @@ const CharityCard = ({ data }: CharityCardProps) => {
         {/* category */}
         <div className="absolute top-0 left-0 bg-primary px-4 py-1 font-bold text-sm">{data.Category.Title}</div>
         {/* image */}
-        <Image src={data.Photo.Medium ?? "/empty.png"} alt={`${data.ID} Photo`} width={0} height={0} sizes="100vw" className="w-full" />
+        <Image src={data.Photo.Medium ?? "/empty.png"} alt={`${data.ID} Photo`} width={0} height={0} sizes="100vw" className="w-full aspect-video bg-center object-cover" />
         {/* body */}
         <div className="bg-white p-4 flex flex-col justify-between flex-1">
           <article>

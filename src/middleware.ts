@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getCookieServer } from "./actions/cookie-action";
-import { UserData } from "../types/user-types";
-import { safeJsonParse } from "../utils/safeJsonParse";
 import { tokenVerify } from "./services/token-service/token-verify-service";
-import { manageUserInfoCookie } from "./actions/user-action";
+import { getUserInfo, manageUserInfoCookie } from "./actions/user-action";
 
 export async function middleware(request: NextRequest) {
   // ================================
@@ -35,8 +32,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Read cookie
-  const userInfoRaw = await getCookieServer("user_info");
-  const userInfo = safeJsonParse<UserData>(userInfoRaw);
+  const userInfo = await getUserInfo();
   const isLoggedIn = !!userInfo;
 
   const isVisitorRoute = pathname.startsWith("/visitor");

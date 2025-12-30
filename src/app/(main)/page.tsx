@@ -19,13 +19,13 @@ export default async function Home() {
     }
   };
   const [dataNews, dataNewSecondary, dataNewPrimary, dataPopulerSecondary, dataServiceMenu, dataTestimonies, dataBannerImage] = await Promise.all([
-    safe(getArticles, { Count: 10, Page: 1 }, false),
-    safe(getSecondaryNew, false),
-    safe(getPropertyPrimary, false),
-    safe(getSecondaryPopuler, false),
-    safe(getShortcuts, false),
-    safe(getTestimonies, false),
-    safe(getBannerHero, false),
+    safe(getArticles, { Count: 10, Page: 1 }),
+    safe(getSecondaryNew),
+    safe(getPropertyPrimary),
+    safe(getSecondaryPopuler),
+    safe(getShortcuts),
+    safe(getTestimonies),
+    safe(getBannerHero),
   ]);
 
   const everythingFailed =

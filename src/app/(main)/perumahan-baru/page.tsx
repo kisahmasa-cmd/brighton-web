@@ -13,6 +13,8 @@ interface PageProps {
   searchParams: Promise<PropertyParams>;
 }
 
+export const revalidate = 300; // Revalidate every 5 minutes
+
 const page = async ({ searchParams }: PageProps) => {
   const params = await searchParams;
   const page = Number(params?.page) || 1;

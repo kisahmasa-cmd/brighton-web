@@ -1,18 +1,21 @@
-"use server"
+"use server";
 
+import { AuthTokenData } from "../../types/token-types";
+import { safeJsonParse } from "../../utils/safeJsonParse";
 import { getCookieServer, setCookieServer, removeCookieServer } from "./cookie-action";
 
+const TOKEN_KEY = "auth_token";
 
-const TOKEN_KEY = "access_token";
-
-export async function getServerToken(): Promise<string | undefined> {
-  return await getCookieServer(TOKEN_KEY);
+export async function getServerToken() {
+  const authTokenRaw = await getCookieServer(TOKEN_KEY);
+  const authToken = safeJsonParse<AuthTokenData>(authTokenRaw);
+  return authToken;
 }
 
-export async function setServerToken(token: string): Promise<void> {
-  await setCookieServer(TOKEN_KEY, token);
+export async function setServerToken(token: AuthTokenData) {
+  await setCookieServer(TOKEN_KEY, JSON.stringify(token));
 }
 
-export async function removeServerToken(): Promise<void> {
+export async function removeServerToken() {
   await removeCookieServer(TOKEN_KEY);
 }

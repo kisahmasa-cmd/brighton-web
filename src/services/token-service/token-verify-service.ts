@@ -14,14 +14,13 @@ export const tokenVerify = async (): Promise<UserData | null> => {
   try {
     const res = await apiFetch<TokenVerifyResponse>("/auth/tokenverify", {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      withBearerToken: true,
       withClientId: false,
     });
 
     return res.Data;
   } catch (error) {
+    console.error(`Error verifying token: ${error}`);
     return null;
   }
 }

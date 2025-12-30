@@ -13,7 +13,7 @@ export async function GET(request: Request) {
 
   const origin = `${proto}://${host}`;
 
-  if (isProd) {
+  if (!isProd) {
     // Development: block all
     return new Response(
       `User-agent: *

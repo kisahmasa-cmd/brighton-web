@@ -1,82 +1,48 @@
 "use client";
 
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {Button} from "@/components/ui/button";
-import {ChevronDown, SlidersHorizontal} from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import React, {useState, useEffect} from "react";
-import {
-  Developer,
-  PropertyBasicInfo,
-  PropertyParams,
-} from "../../../types/property-types";
+import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { ChevronDown, SlidersHorizontal } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import React, { useState, useEffect } from "react";
+import { Developer, PropertyBasicInfo, PropertyParams } from "../../../types/property-types";
 import Link from "next/link";
 import InputCityPrimary from "@/components/custom/InputCityPrimary";
 import InputDeveloper from "@/components/custom/InputDeveloper";
-import {Checkbox} from "../ui/checkbox";
-import {getGeolocation} from "../../../utils/getGeolocation";
+import { Checkbox } from "../ui/checkbox";
+import { getGeolocation } from "../../../utils/getGeolocation";
 import ActionClear from "@/components/custom/ActionClear";
 
 interface InputFilterDialogProps {
-  isMobile?: boolean,
-  propertyTypes?: PropertyBasicInfo[] | undefined,
-  params?: PropertyParams,
-  developer?: Developer[] | undefined,
-  onLocationChange?: (locationId: string) => void,
-  onOverseasChange?: (overseas: number) => void
+  isMobile?: boolean;
+  propertyTypes?: PropertyBasicInfo[] | undefined;
+  params?: PropertyParams;
+  developer?: Developer[] | undefined;
+  onLocationChange?: (locationId: string) => void;
+  onOverseasChange?: (overseas: number) => void;
 }
 
-export default function InputPropertyFilterDialogPrimary({
-  isMobile,
-  propertyTypes = [],
-  params,
-  developer,
-  onLocationChange,
-  onOverseasChange
-}: InputFilterDialogProps) {
+export default function InputPropertyFilterDialogPrimary({ isMobile, propertyTypes = [], params, developer, onLocationChange, onOverseasChange }: InputFilterDialogProps) {
   const isOverseas = params?.show === "overseas";
   const [filterOpen, setFilterOpen] = useState(false);
 
   // Filter states
   const [activeTab, setActiveTab] = useState(isOverseas ? "1" : "0");
   const [type, setType] = useState<string>(params?.Type ?? "");
-  const [locationID, setLocationID] = useState<string>(
-    params?.LocationID?.toString() ?? "",
-  );
+  const [locationID, setLocationID] = useState<string>(params?.LocationID?.toString() ?? "");
   const [lBMin, setLBMin] = useState<string>(params?.LBMin?.toString() ?? "");
   const [lBMax, setLBMax] = useState<string>(params?.LBMax?.toString() ?? "");
-  const [developerID, setDeveloperID] = useState<string>(
-    params?.DeveloperID?.toString() ?? "",
-  );
-  const [isClosest, setIsClosest] = useState<boolean>(
-    params?.SortField === "closest",
-  );
-  const [latitude, setLatitude] = useState<number | undefined>(
-    isClosest ? params?.Latitude : undefined,
-  );
-  const [longitude, setLongitude] = useState<number | undefined>(
-    isClosest ? params?.Longitude : undefined,
-  );
+  const [developerID, setDeveloperID] = useState<string>(params?.DeveloperID?.toString() ?? "");
+  const [isClosest, setIsClosest] = useState<boolean>(params?.SortField === "closest");
+  const [latitude, setLatitude] = useState<number | undefined>(isClosest ? params?.Latitude : undefined);
+  const [longitude, setLongitude] = useState<number | undefined>(isClosest ? params?.Longitude : undefined);
 
   // Get Current Locations
   useEffect(() => {
     getGeolocation((lat, long) => {
       setLatitude(lat);
       setLongitude(long);
-    })
+    });
   }, []);
 
   // Sync all state with params when params change
@@ -134,9 +100,9 @@ export default function InputPropertyFilterDialogPrimary({
     };
   };
 
-  const queryParams = Object.fromEntries(
-    Object.entries(buildParams()).filter(([_, v]) => v !== undefined && v !== ""),
-  );
+  const queryParams = Object.fromEntries(Object.entries(buildParams()).filter(([_, v]) => v !== undefined && v !== ""));
+
+  console.log("LocationID:", locationID);
 
   return (
     <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
@@ -144,15 +110,11 @@ export default function InputPropertyFilterDialogPrimary({
         <Button
           size={isMobile ? "sm" : "default"}
           variant={isMobile ? "outline" : "ghost"}
-          className={
-            isMobile
-              ? "flex-1 rounded-lg bg-white border-0 shadow transition-shadow"
-              : "rounded-full px-6 font-medium cursor-pointer"
-          }
+          className={isMobile ? "flex-1 rounded-lg bg-white border-0 shadow transition-shadow" : "rounded-full px-6 font-medium cursor-pointer"}
         >
-          <SlidersHorizontal className="hidden sm:block mr-2 h-4 w-4"/>
+          <SlidersHorizontal className="hidden sm:block mr-2 h-4 w-4" />
           Filter
-          <ChevronDown className="sm:hidden h-4 w-4"/>
+          <ChevronDown className="sm:hidden h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-screen sn:max-w-2xl sm:h-auto h-full flex flex-col gap-0 sm:max-h-[90vh] max-h-screen overflow-y-auto sm:rounded-lg rounded-none w-full">
@@ -169,7 +131,7 @@ export default function InputPropertyFilterDialogPrimary({
             <div className="col-span-3">
               <Select value={activeTab} onValueChange={handleOverseasChange}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Lokal"/>
+                  <SelectValue placeholder="Lokal" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="0">Lokal</SelectItem>
@@ -183,13 +145,7 @@ export default function InputPropertyFilterDialogPrimary({
           <div className="grid grid-cols-5 items-center">
             <label className="col-span-2 text-sm font-medium">Kota</label>
             <div className="col-span-3">
-              <InputCityPrimary
-                defaultCity={locationID}
-                style={"input"}
-                withClear={true}
-                overseas={Number(activeTab)}
-                onChange={handleLocationChange}
-              />
+              <InputCityPrimary defaultCity={locationID} style={"input"} withClear={true} overseas={Number(activeTab)} onChange={handleLocationChange} />
             </div>
           </div>
 
@@ -197,13 +153,7 @@ export default function InputPropertyFilterDialogPrimary({
           <div className="grid grid-cols-5 items-center">
             <label className="col-span-2 text-sm font-medium">Pengembang</label>
             <div className="col-span-3">
-              <InputDeveloper
-                style={"input"}
-                developer={developer}
-                withClear={true}
-                defaultDeveloper={params?.DeveloperID?.toString()}
-                onChange={setDeveloperID}
-              />
+              <InputDeveloper style={"input"} developer={developer} withClear={true} defaultDeveloper={params?.DeveloperID?.toString()} onChange={setDeveloperID} />
             </div>
           </div>
 
@@ -211,13 +161,10 @@ export default function InputPropertyFilterDialogPrimary({
           <div className="grid grid-cols-5 items-center">
             <label className="col-span-2 text-sm font-medium">Tipe</label>
             <div className="col-span-3">
-              <ActionClear
-                value={type}
-                onClear={() => setType("")}
-              >
+              <ActionClear value={type} onClear={() => setType("")}>
                 <Select value={type} onValueChange={setType}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Pilih Tipe"/>
+                    <SelectValue placeholder="Pilih Tipe" />
                   </SelectTrigger>
                   <SelectContent>
                     {propertyTypes?.length > 0 ? (
@@ -227,9 +174,7 @@ export default function InputPropertyFilterDialogPrimary({
                         </SelectItem>
                       ))
                     ) : (
-                      <div className="px-3 py-2 text-gray-400 text-sm">
-                        Tidak ada data
-                      </div>
+                      <div className="px-3 py-2 text-gray-400 text-sm">Tidak ada data</div>
                     )}
                   </SelectContent>
                 </Select>
@@ -238,28 +183,22 @@ export default function InputPropertyFilterDialogPrimary({
           </div>
 
           {/* Sekitar Saya */}
-          <div className="grid grid-cols-5 items-center">
-            <label className="col-span-2 text-sm font-medium" htmlFor="nearMe">
-              Sekitar Saya
-            </label>
-            <div className="col-span-3">
-              <Checkbox
-                id="nearMe"
-                checked={isClosest}
-                onCheckedChange={() => setIsClosest(!isClosest)}
-                className="cursor-pointer"
-              />
+          {locationID !== "" ? null : (
+            <div className="grid grid-cols-5 items-center">
+              <label className="col-span-2 text-sm font-medium" htmlFor="nearMe">
+                Sekitar Saya
+              </label>
+              <div className="col-span-3">
+                <Checkbox id="nearMe" checked={isClosest} onCheckedChange={() => setIsClosest(!isClosest)} className="cursor-pointer" />
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Action Buttons */}
         <div className="flex justify-end gap-3 pt-4 border-t">
           <DialogClose asChild>
-            <Button
-              variant="outline"
-              className="font-bold px-8 rounded-full cursor-pointer"
-            >
+            <Button variant="outline" className="font-bold px-8 rounded-full cursor-pointer">
               Batal
             </Button>
           </DialogClose>
@@ -270,9 +209,7 @@ export default function InputPropertyFilterDialogPrimary({
             }}
             onClick={() => setFilterOpen(false)}
           >
-            <Button className="font-bold rounded-full text-black px-8 cursor-pointer">
-              Cari
-            </Button>
+            <Button className="font-bold rounded-full text-black px-8 cursor-pointer">Cari</Button>
           </Link>
         </div>
       </DialogContent>

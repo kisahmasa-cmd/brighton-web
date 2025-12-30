@@ -1,3 +1,4 @@
+import { getServerToken } from "@/actions/token-action";
 import { ForgotPasswordRequestBody, LoginRequestBody, LoginResponseData, RegisterRequestBody, RepairPasswordRequestBody } from "../../types/auth-types";
 import { ApiResponse } from "../../utils/apiResponse";
 import { apiFetch } from "./api";
@@ -22,12 +23,12 @@ export const register = (request: RegisterRequestBody) => {
   });
 };
 
-export const logout = async (token: string) => {
+export const logout = async () => {
+  const token = await getServerToken();
   const result = await apiFetch<ApiResponse<null>>("/auth/logout", {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    body: JSON.stringify({MobileToken: token?.MobileToken}),
+    withBearerToken: true,
     withClientId: false,
   });
 
