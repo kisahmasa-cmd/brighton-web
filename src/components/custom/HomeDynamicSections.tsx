@@ -14,19 +14,19 @@ const PropertySliderPrimary = dynamic(() => import("@/components/custom/Property
   loading: () => <div className="h-48 bg-gray-100 animate-pulse" />,
 });
 const PropertySlider = dynamic(() => import("@/components/custom/PropertySlider"), {
-  // ssr: false,
+  ssr: false,
   loading: () => <div className="h-48 bg-gray-100 animate-pulse" />,
 });
 const NewsSlider = dynamic(() => import("@/components/custom/NewsSlider"), {
-  // ssr: false,
+  ssr: false,
   loading: () => <div className="h-48 bg-gray-100 animate-pulse" />,
 });
 const TestimoniSlider = dynamic(() => import("@/components/custom/TestimoniSlider"), {
-  // ssr: false,
+  ssr: false,
   loading: () => <div className="h-48 bg-gray-100 animate-pulse" />,
 });
 const Newsletter = dynamic(() => import("@/components/custom/NewsLetter"), {
-  // ssr: false,
+  ssr: false,
   loading: () => <div className="h-48 bg-gray-100 animate-pulse" />,
 });
 
