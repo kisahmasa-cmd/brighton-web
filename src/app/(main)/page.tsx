@@ -1,61 +1,46 @@
 import HomeHeader from "@/components/custom/HomeHeader";
 import HomeDynamicSections from "@/components/custom/HomeDynamicSections";
-import { getArticles } from "@/services/article-service";
-import { getBannerHero, getShortcuts, getTestimonies } from "@/services/homepage-service/homepage-service";
-import { getPropertyPrimary, getSecondaryNew, getSecondaryPopuler } from "@/services/homepage-service/secondary-new-service";
+import { getBannerHero, getShortcuts } from "@/services/homepage-service/homepage-service";
 import { InjectSchema } from "@/lib/schema/inject-schema";
 import { buildHomepageSchema } from "@/lib/schema/schema-builder-helper";
-import { DEFAULT_RESPONSE } from "@/data/default-response";
 import NotFound from "@/components/custom/NotFound";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export const revalidate = 300; // CACHE PAGE
 
 export default async function Home() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const safe = async (fn: any, ...args: any[]) => {
-    try {
-      return await fn(...args);
-    } catch (e) {
-      console.error("API ERROR:", e);
-      return DEFAULT_RESPONSE;
-    }
-  };
-  const [dataNews, dataNewSecondary, dataNewPrimary, dataPopulerSecondary, dataServiceMenu, dataTestimonies, dataBannerImage] = await Promise.all([
-    safe(getArticles, { Count: 10, Page: 1 }),
-    safe(getSecondaryNew),
-    safe(getPropertyPrimary),
-    safe(getSecondaryPopuler),
-    safe(getShortcuts),
-    safe(getTestimonies),
-    safe(getBannerHero),
-  ]);
+  const [dataBannerImage, dataServiceMenu] = await Promise.all([getBannerHero(), getShortcuts()]);
 
-  const everythingFailed =
-    dataNews === DEFAULT_RESPONSE &&
-    dataNewSecondary === DEFAULT_RESPONSE &&
-    dataNewPrimary === DEFAULT_RESPONSE &&
-    dataPopulerSecondary === DEFAULT_RESPONSE &&
-    dataServiceMenu === DEFAULT_RESPONSE &&
-    dataTestimonies === DEFAULT_RESPONSE &&
-    dataBannerImage === DEFAULT_RESPONSE;
+  if (!dataBannerImage?.Data) return <NotFound />;
 
-  if (everythingFailed) return <NotFound />;
-
-  //schema
   const homepageSchema = buildHomepageSchema();
 
   return (
     <main className="w-full h-full mx-auto">
       <InjectSchema data={homepageSchema} />
-      {/* HomeHeader tetap SSR (hero + LCP image) */}
+
       <HomeHeader dataServices={dataServiceMenu.Data} dataBanner={dataBannerImage.Data} />
 
-      {/* Semua section berat dirender client-side di HomeDynamicSections */}
-      <HomeDynamicSections
-        dataNewPrimary={dataNewPrimary.Data}
-        dataPopulerSecondary={dataPopulerSecondary.Data}
-        dataNewSecondary={dataNewSecondary.Data}
-        dataNews={dataNews.Data}
-        dataTestimonies={dataTestimonies.Data}
-      />
+      {/* SECTION BERAT — STREAMING */}
+      <Suspense
+        fallback={
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="bg-gray-50 rounded-xl overflow-hidden">
+                <Skeleton className="w-full h-40 md:h-48" />
+                <div className="p-3 md:p-4 space-y-2">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+                  <Skeleton className="h-5 w-1/3" />
+                </div>
+              </div>
+            ))}
+          </div>
+        }
+      >
+        <HomeDynamicSections />
+      </Suspense>
     </main>
   );
 }
