@@ -7,12 +7,13 @@ import { ArticleItem } from "../../../types/article-types";
 import { TestimoniData } from "../../../types/testimoni-types";
 import { Property } from "../../../types/property-types";
 import SectionFallback from "./SectionFallback";
+import PropertySliderPrimary from "./PropertySliderPrimary";
 
 // dynamic import client-only components (ssr: false)
-const PropertySliderPrimary = dynamic(() => import("@/components/custom/PropertySliderPrimary"), {
-  // ssr: false,
-  loading: () => <div className="h-48 bg-gray-100 animate-pulse" />,
-});
+// const PropertySliderPrimary = dynamic(() => import("@/components/custom/PropertySliderPrimary"), {
+//   ssr: false,
+//   loading: () => <div className="h-48 bg-gray-100 animate-pulse" />,
+// });
 const PropertySlider = dynamic(() => import("@/components/custom/PropertySlider"), {
   ssr: false,
   loading: () => <div className="h-48 bg-gray-100 animate-pulse" />,
