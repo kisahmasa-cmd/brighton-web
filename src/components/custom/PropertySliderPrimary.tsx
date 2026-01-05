@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import CardPropertyPrimary from "./CardPropertyPrimary";
 import { Property } from "../../../types/property-types";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+
+const PropertySliderPrimaryClient = dynamic(() => import("./PropertySliderPrimaryClient"), { ssr: false });
 
 interface PropertyPrimarySliderProps {
   data?: Property[];
@@ -23,23 +26,7 @@ export default function PropertySliderPrimary(props: PropertyPrimarySliderProps)
           </Link>
         </div>
       </div>
-      <div className="lg:w-3/4 w-full">
-        <Carousel
-          opts={{
-            align: "start",
-          }}
-        >
-          <CarouselContent>
-            {datas?.map((data, index) => (
-              <CarouselItem key={index} className="basis-full sm:basis-1/2 lg:basis-1/3 pb-4">
-                <CardPropertyPrimary data={data}></CardPropertyPrimary>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="left-0 -translate-x-1/2 cursor-pointer shadow-lg" />
-          <CarouselNext className="right-0 translate-x-1/2 cursor-pointer shadow-lg" />
-        </Carousel>
-      </div>
+      <PropertySliderPrimaryClient data={datas} />
       <div className="sm:hidden block">
         <Link href={"/perumahan-baru"} className="bg-secondary rounded-full font-bold text-label-4xl text-white px-8 py-2">
           Lihat Semua
