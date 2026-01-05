@@ -1,6 +1,6 @@
 "use client";
 
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import CardPropertyPrimary from "./CardPropertyPrimary";
 import { Property } from "../../../types/property-types";
 
@@ -16,6 +16,8 @@ export default function PropertySliderPrimaryClient(dataProps: { data?: Property
             </CarouselItem>
           ))}
         </CarouselContent>
+        <CarouselPrevious className="left-0 -translate-x-1/2 cursor-pointer shadow-lg" />
+        <CarouselNext className="right-0 translate-x-1/2 cursor-pointer shadow-lg" />
       </Carousel>
     </div>
   );
