@@ -1,6 +1,7 @@
 export function removeBaseUrl(url: string): string {
   const BASE_URL = "https://www.brighton.co.id";
   const DEV_BASE_URL = "https://dev.brighton.co.id";
+  const LANDING_BASE_URL = "https://landing.brighton.co.id";
 
   // console.log(`NEXT_PUBLIC_CLEAN : ${process.env.NEXT_PUBLIC_CLEAN}`);
 
@@ -14,6 +15,8 @@ export function removeBaseUrl(url: string): string {
       return url.replace(BASE_URL, "");
     } else if (url.startsWith(DEV_BASE_URL)) {
       return url.replace(DEV_BASE_URL, "");
+    } else if (url.startsWith(LANDING_BASE_URL)) {
+      return url.replace(LANDING_BASE_URL, "");
     } else {
       const urlMod = "/" + url;
       return urlMod;

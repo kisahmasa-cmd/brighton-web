@@ -2,12 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Label } from "../ui/label";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "../ui/input-group";
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "../ui/input-group";
 import { Eye, EyeOff, Lock, User } from "lucide-react";
 import { toast } from "sonner";
 import { Checkbox } from "../ui/checkbox";
@@ -42,7 +37,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ isMember, onClose }) => {
 
   const searchParams = useSearchParams();
 
-  const getRememberMeLogin = ():RememberMeData => {
+  const getRememberMeLogin = (): RememberMeData => {
     if (!isMember) return {};
     const data = Cookies.get(REMEMBER_ME_KEY);
     if (!!data) {
@@ -50,14 +45,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ isMember, onClose }) => {
       return parsed;
     }
     return {};
-  }
+  };
 
   const setRememberMeLogin = () => {
     const data = { username, password };
     Cookies.set(REMEMBER_ME_KEY, JSON.stringify(data), {
-      expires: 1, sameSite: "strict",
+      expires: 1,
+      sameSite: "strict",
     });
-  }
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -78,10 +74,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ isMember, onClose }) => {
       const result = await login(request);
 
       if (result.Data) {
-        if (result.AccessToken && result.MobileToken) {
+        if (result.AccessToken) {
           const token: AuthTokenData = {
             AccessToken: result.AccessToken,
-            MobileToken: result.MobileToken,
+            MobileToken: result.MobileToken ?? "",
           };
           await setServerToken(token);
         }
@@ -145,15 +141,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ isMember, onClose }) => {
           <InputGroupAddon>
             <User className="w-4 h-4" />
           </InputGroupAddon>
-          <InputGroupInput
-            type="text"
-            id="username"
-            placeholder="Masukkan email/username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            disabled={isLoading}
-            required
-          />
+          <InputGroupInput type="text" id="username" placeholder="Masukkan email/username" value={username} onChange={(e) => setUsername(e.target.value)} disabled={isLoading} required />
         </InputGroup>
       </div>
       {/* Password Field */}
@@ -173,16 +161,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ isMember, onClose }) => {
             required
           />
           <InputGroupAddon align="inline-end">
-            <InputGroupButton
-              onClick={() => setIsShowPassword(!isShowPassword)}
-              className="rounded-full"
-              tabIndex={-1}
-            >
-              {isShowPassword ? (
-                <EyeOff className="w-4 h-4" />
-              ) : (
-                <Eye className="w-4 h-4" />
-              )}
+            <InputGroupButton onClick={() => setIsShowPassword(!isShowPassword)} className="rounded-full" tabIndex={-1}>
+              {isShowPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </InputGroupButton>
           </InputGroupAddon>
         </InputGroup>
@@ -190,29 +170,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ isMember, onClose }) => {
 
       {/* Remember Me Checkbox - hanya untuk Member */}
       {isMember && (
-        <Label
-          htmlFor="rememberMe"
-          className="flex items-center gap-2 cursor-pointer"
-        >
-          <Checkbox
-            id="rememberMe"
-            value="alwaysLogin"
-            defaultChecked={isRememberMe}
-            checked={isRememberMe}
-            className="cursor-pointer"
-            onCheckedChange={() => setIsRememberMe(!isRememberMe)}
-          />
+        <Label htmlFor="rememberMe" className="flex items-center gap-2 cursor-pointer">
+          <Checkbox id="rememberMe" value="alwaysLogin" defaultChecked={isRememberMe} checked={isRememberMe} className="cursor-pointer" onCheckedChange={() => setIsRememberMe(!isRememberMe)} />
           <span>Biarkan saya tetap masuk</span>
         </Label>
       )}
 
       {/* Login Button */}
-      <Button
-        type="submit"
-        size="lg"
-        className="rounded-full w-full font-semibold"
-        disabled={isLoading}
-      >
+      <Button type="submit" size="lg" className="rounded-full w-full font-semibold" disabled={isLoading}>
         Login
       </Button>
     </form>

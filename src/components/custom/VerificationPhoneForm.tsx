@@ -18,9 +18,7 @@ interface VerificationPhoneFormProps {
   user: UserData;
 }
 
-const VerificationPhoneForm: React.FC<VerificationPhoneFormProps> = ({
-  user,
-}) => {
+const VerificationPhoneForm: React.FC<VerificationPhoneFormProps> = ({ user }) => {
   const [stateWANumber, setStateWANumber] = useState<string>(user.Phone);
   const [isShowChangeNumber, setIsShowChangeNumber] = useState(false);
   const [otpCode, setOtpCode] = useState("");
@@ -62,9 +60,7 @@ const VerificationPhoneForm: React.FC<VerificationPhoneFormProps> = ({
     handleVerify();
   };
 
-  const handleKeyDownVerify = (
-    event: React.KeyboardEvent<HTMLInputElement>,
-  ) => {
+  const handleKeyDownVerify = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
       handleVerify();
@@ -87,10 +83,10 @@ const VerificationPhoneForm: React.FC<VerificationPhoneFormProps> = ({
         throw "Gagal verifikasi kode";
       }
 
-      if (result.AccessToken && result.MobileToken) {
+      if (result.AccessToken) {
         const token: AuthTokenData = {
           AccessToken: result.AccessToken,
-          MobileToken: result.MobileToken,
+          MobileToken: result.MobileToken ?? "",
         };
         await setServerToken(token);
       }
@@ -108,26 +104,15 @@ const VerificationPhoneForm: React.FC<VerificationPhoneFormProps> = ({
   }, []);
 
   if (isShowChangeNumber) {
-    return (
-      <ChangeNumberForm
-        setIsShowChangeNumber={setIsShowChangeNumber}
-        handleSendOtp={handleSendOtp}
-      />
-    );
+    return <ChangeNumberForm setIsShowChangeNumber={setIsShowChangeNumber} handleSendOtp={handleSendOtp} />;
   }
 
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="flex flex-col items-center gap-2">
-        <h1 className="text-2xl font-bold text-center">
-          Masukkan Kode Verifikasi
-        </h1>
-        <p className="text-center">
-          Kami telah mengirimkan kode verifikasi ke nomor:
-        </p>
-        <p className="text-center px-4 py-2 rounded-md bg-info/20 text-lg font-semibold">
-          {stateWANumber}
-        </p>
+        <h1 className="text-2xl font-bold text-center">Masukkan Kode Verifikasi</h1>
+        <p className="text-center">Kami telah mengirimkan kode verifikasi ke nomor:</p>
+        <p className="text-center px-4 py-2 rounded-md bg-info/20 text-lg font-semibold">{stateWANumber}</p>
         {!isTimerRunning && (
           <Button
             variant="ghost"
@@ -154,20 +139,11 @@ const VerificationPhoneForm: React.FC<VerificationPhoneFormProps> = ({
         >
           {Array.from({ length: 4 }).map((_, index) => (
             <InputOTPGroup key={index} className="flex-1">
-              <InputOTPSlot
-                index={index}
-                className="w-full text-xl font-semibold"
-                inputMode="numeric"
-              />
+              <InputOTPSlot index={index} className="w-full text-xl font-semibold" inputMode="numeric" />
             </InputOTPGroup>
           ))}
         </InputOTP>
-        <Button
-          size="xl"
-          type="submit"
-          disabled={isLoading || !isTimerRunning}
-          className="w-full rounded-full font-semibold text-lg"
-        >
+        <Button size="xl" type="submit" disabled={isLoading || !isTimerRunning} className="w-full rounded-full font-semibold text-lg">
           {isLoading ? "Verifikasi..." : "Verifikasi"}
         </Button>
       </form>
@@ -177,20 +153,12 @@ const VerificationPhoneForm: React.FC<VerificationPhoneFormProps> = ({
           <p>
             Tunggu{" "}
             <span className="font-bold text-lg">
-              <OTPTimer
-                isRunning={isTimerRunning}
-                onTimerEnd={handleTimerEnd}
-              />
+              <OTPTimer isRunning={isTimerRunning} onTimerEnd={handleTimerEnd} />
             </span>{" "}
             untuk kirim ulang
           </p>
         ) : (
-          <Button
-            variant="outline"
-            onClick={() => handleSendOtp(stateWANumber)}
-            className="font-semibold rounded-full"
-            disabled={isLoadingSendOtp}
-          >
+          <Button variant="outline" onClick={() => handleSendOtp(stateWANumber)} className="font-semibold rounded-full" disabled={isLoadingSendOtp}>
             Kirim Ulang Kode
           </Button>
         )}
@@ -204,10 +172,7 @@ interface ChangeNumberProps {
   handleSendOtp: (waNumber: string) => Promise<void>;
 }
 
-const ChangeNumberForm = ({
-  setIsShowChangeNumber,
-  handleSendOtp,
-}: ChangeNumberProps) => {
+const ChangeNumberForm = ({ setIsShowChangeNumber, handleSendOtp }: ChangeNumberProps) => {
   const [newWANumber, setNewWANumber] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -228,14 +193,9 @@ const ChangeNumberForm = ({
     <div className="flex flex-col items-center gap-8">
       <div className="flex flex-col items-center gap-2">
         <h1 className="text-2xl font-bold text-center">Ganti Nomor WhatsApp</h1>
-        <p className="text-center">
-          Masukkan nomor WhatsApp baru untuk menerima kode verifikasi
-        </p>
+        <p className="text-center">Masukkan nomor WhatsApp baru untuk menerima kode verifikasi</p>
       </div>
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-2 w-full max-w-72"
-      >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2 w-full max-w-72">
         <Input
           type="text"
           placeholder="Masukkan Nomor WhatsApp"
@@ -247,19 +207,10 @@ const ChangeNumberForm = ({
           required
           disabled={isLoading}
         />
-        <Button
-          type="submit"
-          className="font-semibold rounded-full"
-          disabled={isLoading}
-        >
+        <Button type="submit" className="font-semibold rounded-full" disabled={isLoading}>
           {isLoading ? "Mengirim..." : "Kirim Kode Verifikasi"}
         </Button>
-        <Button
-          variant="outline"
-          className="font-semibold rounded-full"
-          disabled={isLoading}
-          onClick={() => setIsShowChangeNumber(false)}
-        >
+        <Button variant="outline" className="font-semibold rounded-full" disabled={isLoading} onClick={() => setIsShowChangeNumber(false)}>
           Batal
         </Button>
       </form>
@@ -274,11 +225,7 @@ interface OTPTimerProps {
   resetSeconds?: number;
 }
 
-const OTPTimer: React.FC<OTPTimerProps> = ({
-  isRunning,
-  onTimerEnd,
-  resetSeconds = 119,
-}) => {
+const OTPTimer: React.FC<OTPTimerProps> = ({ isRunning, onTimerEnd, resetSeconds = 119 }) => {
   const [timeLeft, setTimeLeft] = useState(resetSeconds);
   const intervalRef = useRef<number | null>(null);
 
