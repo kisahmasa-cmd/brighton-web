@@ -34,26 +34,35 @@ export default function CarouselBanner({ images = [], showControls = true, data 
 
   return (
     <div className="w-full mx-auto">
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden w-full min-h-[220px] md:min-h-[420px]">
         {/* Carousel Content */}
         <div className="flex transition-transform md:max-h-full max-h-[600px] duration-500 ease-out" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
           {data?.map((image) => {
             return (
-              <Link key={image.ID} href={removeBaseUrl(image.Link)} aria-label="Artikel Brighton Real Estate" className={`min-w-full h-full flex flex-col items-center justify-center p-2 md:p-0`}>
-                <div></div>
-                {isMobile ? (
-                  <Image src={image?.PhotoMobile?.MediumWebP ?? "/empty.png"} alt="Banner" width={800} height={500} priority fetchPriority="high" className="w-full object-cover md:hidden block" />
-                ) : (
-                  <Image
-                    src={image.Photo.OriginalWebP ?? image.Photo.Original ?? "/empty.png"}
-                    alt="Banner"
-                    width={1920}
-                    height={420}
-                    priority
-                    fetchPriority="high"
-                    className="w-full aspect-34/10 object-cover rounded-xl hidden md:block"
-                  />
-                )}
+              <Link key={image.ID} href={removeBaseUrl(image.Link)} aria-label="Artikel Brighton Real Estate" className="min-w-full flex items-center justify-center">
+                {/* MOBILE IMAGE */}
+                <Image
+                  src={image?.PhotoMobile?.MediumWebP ?? "/empty.png"}
+                  alt="Banner Mobile"
+                  width={800}
+                  height={500}
+                  priority
+                  fetchPriority="high"
+                  sizes="100vw"
+                  className="block md:hidden w-full object-cover"
+                />
+
+                {/* DESKTOP IMAGE */}
+                <Image
+                  src={image.Photo.OriginalWebP ?? image.Photo.Original ?? "/empty.png"}
+                  alt="Banner Desktop"
+                  width={1920}
+                  height={420}
+                  priority
+                  fetchPriority="high"
+                  sizes="(min-width: 768px) 100vw"
+                  className="hidden md:block w-full aspect-[34/10] object-cover rounded-xl"
+                />
               </Link>
             );
           })}
