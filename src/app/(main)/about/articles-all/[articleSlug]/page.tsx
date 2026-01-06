@@ -15,6 +15,7 @@ import { removeBaseUrl } from "../../../../../../utils/removeBaseUrl";
 import { buildArticleDetailSchema, buildWebPageSchema } from "@/lib/schema/schema-builder-helper";
 import { InjectSchema } from "@/lib/schema/inject-schema";
 import { schemaBlogPosting } from "@/lib/schema/schema-blog-posting";
+import { cleanDescription } from "../../../../../../utils/cleanDescription";
 
 type Params = Promise<{ articleSlug: string }>;
 
@@ -51,7 +52,7 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = async (props) => {
 
   const articleSchema = schemaBlogPosting({
     headline: articleData.Title,
-    description: articleData.Content,
+    description: cleanDescription(articleData.Content),
     url: `${baseUrl}/about/articles-all/${slug}`,
     image: articleData.Photo.MediumWebP || articleData.Photo.Medium,
     datePublished: articleData.CreatedNice,

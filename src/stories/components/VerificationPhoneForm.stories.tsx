@@ -21,6 +21,7 @@ const user: UserData = {
   Email: "?",
   IsVerified: false,
   UserType: "MEMBER",
+  ExternalID: 0,
 }
 
 export const Default = Template.bind({});

@@ -70,7 +70,7 @@ const Page: React.FC<PageProps> = async (props) => {
   // const [secondary, similarProperties] = await Promise.all([getDetail(slug), getPropertySecondary({ Transaction: "Jual", Count: 10, IsSold: false })]);
   const secondary = await getDetail(slug);
   const secondaryData = secondary.Data;
-  if (!secondaryData) redirect("/cari-properti");
+  if (!secondaryData) redirect(`/cari-properti/${slug}`);
   const agent = Array.isArray(secondaryData?.Agent) ? secondaryData.Agent[0] : secondaryData?.Agent;
 
   const agents = [secondaryData.Agent];

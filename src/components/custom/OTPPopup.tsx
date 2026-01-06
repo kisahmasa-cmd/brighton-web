@@ -1,30 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Label } from "../ui/label";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { sendOTPCode, verifyOTPCode } from "@/services/otp-service";
-import {
-  OtpSendCodeParams,
-  OtpVerifyCodeParams,
-} from "../../../types/otp-types";
+import { OtpSendCodeParams, OtpVerifyCodeParams } from "../../../types/otp-types";
 import { useRouter } from "next/navigation";
 import { setServerToken } from "@/actions/token-action";
 import { useUser } from "./UserContext";
@@ -39,11 +25,7 @@ interface OTPTimerProps {
   resetSeconds?: number;
 }
 
-const OTPTimer: React.FC<OTPTimerProps> = ({
-  isRunning,
-  onTimerEnd,
-  resetSeconds = 119,
-}) => {
+const OTPTimer: React.FC<OTPTimerProps> = ({ isRunning, onTimerEnd, resetSeconds = 119 }) => {
   const [timeLeft, setTimeLeft] = useState(resetSeconds);
   const intervalRef = useRef<number | null>(null);
 
@@ -99,14 +81,7 @@ interface OTPPopupProps {
   initialPhone?: string;
 }
 
-const OTPPopup: React.FC<OTPPopupProps> = ({
-  title,
-  isPopupOpen,
-  setIsPopupOpen,
-  onSuccess,
-  initialName,
-  initialPhone,
-}) => {
+const OTPPopup: React.FC<OTPPopupProps> = ({ title, isPopupOpen, setIsPopupOpen, onSuccess, initialName, initialPhone }) => {
   const user = useUser();
 
   const [name, setName] = useState("");
@@ -133,11 +108,9 @@ const OTPPopup: React.FC<OTPPopupProps> = ({
     if (!trimmedName) return "Nama tidak boleh kosong";
 
     const cleanedPhone = phone.replace(/\D/g, "");
-    if (!cleanedPhone || cleanedPhone.length < 10 || cleanedPhone.length > 15)
-      return "Nomor telepon harus 10-15 digit";
+    if (!cleanedPhone || cleanedPhone.length < 10 || cleanedPhone.length > 15) return "Nomor telepon harus 10-15 digit";
 
-    if ((!otpCode || otpCode.length !== 4) && isTimerRunning)
-      return "Kode verifikasi harus 4 digit";
+    if ((!otpCode || otpCode.length !== 4) && isTimerRunning) return "Kode verifikasi harus 4 digit";
 
     return "ok";
   }
@@ -212,11 +185,11 @@ const OTPPopup: React.FC<OTPPopupProps> = ({
         throw new Error("Gagal verifikasi kode");
       }
 
-      if (result.AccessToken && result.MobileToken) {
+      if (result.AccessToken) {
         const token: AuthTokenData = {
           AccessToken: result.AccessToken,
-          MobileToken: result.MobileToken,
-        }
+          MobileToken: result.MobileToken ?? "",
+        };
         await setServerToken(token);
         const verifyResult = await tokenVerify();
         await manageUserInfoCookie(verifyResult);
@@ -254,27 +227,11 @@ const OTPPopup: React.FC<OTPPopupProps> = ({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <div
-          className={cn(
-            "border-t border-gray-200 pt-4 flex flex-col gap-3",
-            isTimerRunning && "border-b pb-4",
-          )}
-        >
-          <p>
-            Untuk dapat menghubungi agen silakan Login atau kirim Kode
-            Verifikasi terlebih dahulu
-          </p>
+        <div className={cn("border-t border-gray-200 pt-4 flex flex-col gap-3", isTimerRunning && "border-b pb-4")}>
+          <p>Untuk dapat menghubungi agen silakan Login atau kirim Kode Verifikasi terlebih dahulu</p>
           <form onSubmit={handleSendCode} className="space-y-3">
             <div>
-              <Input
-                type="text"
-                placeholder="Nama Anda"
-                className="w-full"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                disabled={isLoading || user?.Name !== undefined}
-              />
+              <Input type="text" placeholder="Nama Anda" className="w-full" value={name} onChange={(e) => setName(e.target.value)} required disabled={isLoading || user?.Name !== undefined} />
             </div>
             <div className="flex flex-row gap-4">
               <Input
@@ -292,11 +249,7 @@ const OTPPopup: React.FC<OTPPopupProps> = ({
                 disabled={isLoading}
                 readOnly={isTimerRunning}
               />
-              <Button
-                type="submit"
-                className="rounded-full font-semibold"
-                disabled={isTimerRunning || isLoading}
-              >
+              <Button type="submit" className="rounded-full font-semibold" disabled={isTimerRunning || isLoading}>
                 Kirim Kode
               </Button>
             </div>
@@ -318,42 +271,24 @@ const OTPPopup: React.FC<OTPPopupProps> = ({
             >
               {Array.from({ length: 4 }).map((_, index) => (
                 <InputOTPGroup key={index} className="flex-1">
-                  <InputOTPSlot
-                    index={index}
-                    className="w-full"
-                    inputMode="numeric"
-                  />
+                  <InputOTPSlot index={index} className="w-full" inputMode="numeric" />
                 </InputOTPGroup>
               ))}
             </InputOTP>
             <p className="text-xs">
-              Periksa kotak masuk WA Anda.{" "}
-              <OTPTimer
-                isRunning={isTimerRunning}
-                onTimerEnd={handleTimerEnd}
-              />
+              Periksa kotak masuk WA Anda. <OTPTimer isRunning={isTimerRunning} onTimerEnd={handleTimerEnd} />
             </p>
           </div>
         </div>
         {isTimerRunning && (
           <DialogFooter>
             <DialogClose asChild>
-              <Button
-                type="button"
-                variant="outline"
-                className="font-semibold"
-                disabled={isLoading}
-              >
+              <Button type="button" variant="outline" className="font-semibold" disabled={isLoading}>
                 Batal
               </Button>
             </DialogClose>
 
-            <Button
-              type="button"
-              className="font-semibold"
-              disabled={isLoading}
-              onClick={handleSubmit}
-            >
+            <Button type="button" className="font-semibold" disabled={isLoading} onClick={handleSubmit}>
               Verifikasi Kode
             </Button>
           </DialogFooter>

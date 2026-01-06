@@ -130,8 +130,8 @@ export async function apiFetch<T>(endpoint: string, options?: ApiFetchOptions): 
     bodyToSend = urlEncoded.toString();
   }
   // uncomment this to debug api request
-  console.log("Fetching API:", urlObj.toString());
-  console.log("body:", { body: bodyToSend });
+  // console.log("Fetching API:", urlObj.toString());
+  // console.log("body:", { body: bodyToSend });
   // console.log("header:", options?.headers);
 
   //check cache

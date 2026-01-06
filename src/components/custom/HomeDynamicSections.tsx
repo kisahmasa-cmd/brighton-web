@@ -1,4 +1,5 @@
 // components/HomeDynamicSections.tsx
+"use client";
 
 import dynamic from "next/dynamic";
 import React from "react";
@@ -6,52 +7,38 @@ import { ArticleItem } from "../../../types/article-types";
 import { TestimoniData } from "../../../types/testimoni-types";
 import { Property } from "../../../types/property-types";
 import SectionFallback from "./SectionFallback";
-import { getArticles } from "@/services/article-service";
-import { getSecondaryNew, getSecondaryPopuler } from "@/services/homepage-service/secondary-new-service";
-import { getPropertyPrimary } from "@/services/property-service";
-import { getTestimonies } from "@/services/homepage-service/homepage-service";
-import PropertySliderPrimary from "@/components/custom/PropertySliderPrimary";
-import PropertySlider from "@/components/custom/PropertySlider";
-import NewsSlider from "@/components/custom/NewsSlider";
-import TestimoniSlider from "@/components/custom/TestimoniSlider";
-import Newsletter from "@/components/custom/NewsLetter";
 
-// // dynamic import client-only components (ssr: false)
-// const PropertySliderPrimary = dynamic(() => import("@/components/custom/PropertySliderPrimary"), {
-//   ssr: false,
-//   loading: () => <div className="h-48 bg-gray-100 animate-pulse" />,
-// });
-// const PropertySlider = dynamic(() => import("@/components/custom/PropertySlider"), {
-//   ssr: false,
-//   loading: () => <div className="h-48 bg-gray-100 animate-pulse" />,
-// });
-// const NewsSlider = dynamic(() => import("@/components/custom/NewsSlider"), {
-//   ssr: false,
-//   loading: () => <div className="h-48 bg-gray-100 animate-pulse" />,
-// });
-// const TestimoniSlider = dynamic(() => import("@/components/custom/TestimoniSlider"), {
-//   ssr: false,
-//   loading: () => <div className="h-48 bg-gray-100 animate-pulse" />,
-// });
-// const Newsletter = dynamic(() => import("@/components/custom/NewsLetter"), {
-//   ssr: false,
-//   loading: () => <div className="h-48 bg-gray-100 animate-pulse" />,
-// });
+// dynamic import client-only components (ssr: false)
+const PropertySliderPrimary = dynamic(() => import("@/components/custom/PropertySliderPrimary"), {
+  ssr: false,
+  loading: () => <div className="h-48 bg-gray-100 animate-pulse" />,
+});
+const PropertySlider = dynamic(() => import("@/components/custom/PropertySlider"), {
+  ssr: false,
+  loading: () => <div className="h-48 bg-gray-100 animate-pulse" />,
+});
+const NewsSlider = dynamic(() => import("@/components/custom/NewsSlider"), {
+  ssr: false,
+  loading: () => <div className="h-48 bg-gray-100 animate-pulse" />,
+});
+const TestimoniSlider = dynamic(() => import("@/components/custom/TestimoniSlider"), {
+  ssr: false,
+  loading: () => <div className="h-48 bg-gray-100 animate-pulse" />,
+});
+const Newsletter = dynamic(() => import("@/components/custom/NewsLetter"), {
+  ssr: false,
+  loading: () => <div className="h-48 bg-gray-100 animate-pulse" />,
+});
 
-export default async function HomeDynamicSections() {
-  const [datasNews, datasNewSecondary, datasNewPrimary, datasPopulerSecondary, datasTestimonies] = await Promise.all([
-    getArticles({ Count: 10, Page: 1 }),
-    getSecondaryNew(),
-    getPropertyPrimary(),
-    getSecondaryPopuler(),
-    getTestimonies(),
-  ]);
+interface HomeDynamicSectionsProps {
+  dataNewPrimary?: Property[];
+  dataPopulerSecondary?: Property[];
+  dataNewSecondary?: Property[];
+  dataNews?: ArticleItem[];
+  dataTestimonies?: TestimoniData[];
+}
 
-  const dataNews = datasNews?.Data ?? [];
-  const dataNewSecondary = datasNewSecondary?.Data ?? [];
-  const dataNewPrimary = datasNewPrimary?.Data ?? [];
-  const dataPopulerSecondary = datasPopulerSecondary?.Data ?? [];
-  const dataTestimonies = datasTestimonies?.Data ?? [];
+export default function HomeDynamicSections({ dataNewPrimary, dataPopulerSecondary, dataNewSecondary, dataNews, dataTestimonies }: HomeDynamicSectionsProps) {
   return (
     <>
       {/* Proyek Baru */}

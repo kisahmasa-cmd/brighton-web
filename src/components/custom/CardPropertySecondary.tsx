@@ -73,34 +73,40 @@ export default function CardPropertySecondary(props: CardPropertySecondaryProps)
     setSelectedAgent(agent);
     setIsSelectedWA(isWA);
 
-    activityLogServer({
-      Action: "Contact",
-      UserContact: isWA ? agent.WAPhone : agent.Phone,
-      UserID: userInfo?.UserID?.toString() ?? "",
-      UserType: userInfo?.UserType === "AGEN" ? "Agent" : "Visitor",
-      UserName: userInfo?.Name ?? "",
-      RefURL: data?.Link ?? "",
-      RefID: data?.IDCode ?? "",
-      ContactType: isWA ? "WhatsApp" : "Phone",
-      ContactID: agent.ID?.toString() ?? "",
-      Contact: isWA ? agent.WAPhone : agent.Phone,
-      RefType: "PropertyData",
-      Source: "Website",
-    });
     if (isWA) {
+      const phoneUsed = userInfo?.UserType === "AGEN" ? agent.WAPhone : getWAVerifikasi();
+
+      // OPEN WA *LANGSUNG* (SYNC)
+      const win = window.open("", "_blank");
+      if (!win) return;
+
       startTransition(async () => {
-        const isAgentUser = userInfo?.UserType === "AGEN";
+        // async BOLEH di sini
+        activityLogServer({
+          Action: "Contact",
+          UserContact: agent.WAPhone,
+          UserID: userInfo?.UserID?.toString() ?? "",
+          UserType: userInfo?.UserType === "AGEN" ? "Agent" : "Visitor",
+          UserName: userInfo?.Name ?? "",
+          RefURL: data?.Link ?? "",
+          RefID: data?.IDCode ?? "",
+          ContactType: "WhatsApp",
+          ContactID: agent.ID?.toString() ?? "",
+          Contact: agent.WAPhone,
+          RefType: "PropertyData",
+          Source: "Website",
+        });
+
         const message = await generateWhatsAppMessage({
           IDCode: data?.IDCode ?? "",
           Title: data?.Title ?? "",
           Link: data?.Link ?? "",
-          isAgent: isAgentUser,
+          isAgent: userInfo?.UserType === "AGEN",
           agentName: userInfo?.Name,
         });
 
-        const phoneUsed = userInfo?.UserType === "AGEN" ? agent.WAPhone : getWAVerifikasi();
-
-        sendWA(phoneUsed, message);
+        // redirect setelah async
+        win.location.href = `https://wa.me/${phoneUsed}?text=${encodeURIComponent(message)}`;
       });
     } else {
       setIsAgentContactPopupOpen(true);

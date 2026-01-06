@@ -1,5 +1,7 @@
 export function sendWA(phoneNumber: string, message: string) {
-  const encodedMessage = encodeURIComponent(message);
-  const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-  window.open(whatsappURL, "_blank");
+  const win = window.open("", "_blank");
+  if (!win) return;
+
+  const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+  win.location.href = url;
 }

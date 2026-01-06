@@ -127,10 +127,10 @@ const RegisterPageForm: React.FC<RegisterPageFormProps> = ({ termContent }) => {
 
       if (result.Data) {
         setInputData(null);
-        if (result.AccessToken && result.MobileToken) {
+        if (result.AccessToken) {
           const token: AuthTokenData = {
             AccessToken: result.AccessToken,
-            MobileToken: result.MobileToken,
+            MobileToken: result.MobileToken ?? "",
           };
           await setServerToken(token);
         }

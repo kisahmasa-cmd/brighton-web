@@ -41,17 +41,19 @@ export default function CarouselBanner({ images = [], showControls = true, data 
             return (
               <Link key={image.ID} href={removeBaseUrl(image.Link)} aria-label="Artikel Brighton Real Estate" className={`min-w-full h-full flex flex-col items-center justify-center p-2 md:p-0`}>
                 <div></div>
-                <Image src={image?.PhotoMobile?.MediumWebP ?? "/empty.png"} alt="Banner" width={800} height={500} priority fetchPriority="high" className="w-full object-cover block md:hidden" />
-
-                <Image
-                  src={image.Photo.OriginalWebP ?? image.Photo.Original ?? "/empty.png"}
-                  alt="Banner"
-                  width={1920}
-                  height={420}
-                  priority
-                  fetchPriority="high"
-                  className="w-full aspect-34/10 object-cover rounded-xl hidden md:block"
-                />
+                {isMobile ? (
+                  <Image src={image?.PhotoMobile?.MediumWebP ?? "/empty.png"} alt="Banner" width={800} height={500} priority fetchPriority="high" className="w-full object-cover md:hidden block" />
+                ) : (
+                  <Image
+                    src={image.Photo.OriginalWebP ?? image.Photo.Original ?? "/empty.png"}
+                    alt="Banner"
+                    width={1920}
+                    height={420}
+                    priority
+                    fetchPriority="high"
+                    className="w-full aspect-34/10 object-cover rounded-xl hidden md:block"
+                  />
+                )}
               </Link>
             );
           })}
