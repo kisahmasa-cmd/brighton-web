@@ -32,6 +32,7 @@ export const getPropertyPrimary = (params?: PropertyParams) => {
     withClientId: false,
     revalidate: 300,
     formData: true,
+    debugISR: "getPropertyPrimary",
   });
 };
 

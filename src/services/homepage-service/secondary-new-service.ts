@@ -41,6 +41,7 @@ export const getPropertySecondary = (params?: PropertyParams) => {
     method: "POST",
     withClientId: false,
     revalidate: 300,
+    debugISR: "getPropertySecondary",
   });
 };
 
