@@ -7,6 +7,7 @@ import {Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious}
 import CardPropertySecondary from "@/components/custom/CardPropertySecondary";
 import { getLastViewedProperties } from "@/services/property-service";
 import Link from "next/link";
+import { info } from "@/services/user-service";
 
 export const metadata: Metadata = {
   title: "Dashboard Public Member",
@@ -38,18 +39,18 @@ const lastViewedProperties = [
 ];
 
 const VisitorDashboardPage = async () => {
-  const user = await getUserInfo();
-  if (!user) return <div>No data user.</div>;
+  const userInfo = await info();
+  const userInfoData = userInfo?.Data;
 
-  // const recentProperties = await getLastViewedProperties(user.ExternalID);
-  const recentProperties = await getSecondaryNew();
-  const recentPropertiesData = recentProperties?.Data;
+  if (!userInfoData) return <div>No data user.</div>;
+
+  const recentProperties = await getLastViewedProperties(userInfoData.ID);
 
   return (
     <div>
       <div className="mb-6 md:mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-          Selamat datang kembali, {user.Name}! 👋
+          Selamat datang kembali, {userInfoData.Name}! 👋
         </h1>
         <p className="text-sm md:text-base text-gray-600">
           Berikut adalah halaman dashboard untuk mengelola akun Anda.
@@ -62,14 +63,14 @@ const VisitorDashboardPage = async () => {
           Properti terakhir dilihat
         </h2>
         <div className="w-full">
-          {recentPropertiesData && recentPropertiesData.length > 0 ? (
+          {recentProperties && recentProperties.length > 0 ? (
             <Carousel
               opts={{
                 align: "start",
               }}
             >
               <CarouselContent>
-                {recentPropertiesData.map((data, index) => (
+                {recentProperties.map((data, index) => (
                   <CarouselItem key={index} className="basis-full sm:basis-1/2 lg:basis-1/3 pb-4">
                     <CardPropertySecondary data={data}></CardPropertySecondary>
                   </CarouselItem>

@@ -75,7 +75,7 @@ const ChangePasswordForm = () => {
       };
       const result = await changePassword(request);
 
-      if (result.Data) {
+      if (result.Data || result.Message?.Code === 200) {
         // Reset form
         setCurrentPassword("");
         setNewPassword("");

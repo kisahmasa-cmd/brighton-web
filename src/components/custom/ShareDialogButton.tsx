@@ -2,33 +2,42 @@
 
 import * as React from "react";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Copy, Mail, Share2 } from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import { useUser } from "./UserContext";
+import { activityLogServer } from "@/services/services-server/activity-log-server";
 
 interface ShareDialogButtonProps {
   URL?: string;
   emailSubject?: string;
+  ID?: number;
 }
 
-const ShareDialogButton: React.FC<ShareDialogButtonProps> = ({
-  URL,
-  emailSubject,
-}) => {
+const ShareDialogButton: React.FC<ShareDialogButtonProps> = ({ URL, emailSubject, ID }) => {
   const [isOpen, setIsOpen] = React.useState(false);
+  const userInfo = useUser();
 
-  const shareLink =
-    (URL ?? typeof window !== "undefined") ? window.location.href : "#";
+  const logActivity = (type: string) => {
+    activityLogServer({
+      Action: "Share",
+      UserID: userInfo?.UserID ?? "",
+      UserName: userInfo?.Name ?? "",
+      UserType: userInfo?.UserType === "AGEN" ? "Agent" : "Visitor",
+      RefURL: URL ?? "",
+      RefID: ID?.toString() ?? "",
+      RefType: "PropertyData",
+      ContactType: type,
+      Source: "Website",
+    });
+  };
+
+  const shareLink = URL ?? typeof window !== "undefined" ? window.location.href : "#";
 
   function handleCopyLink() {
+    logActivity("Website");
     navigator.clipboard
       .writeText(shareLink)
       .then(() => {
@@ -44,10 +53,7 @@ const ShareDialogButton: React.FC<ShareDialogButtonProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          className="flex items-center gap-2 rounded-full"
-        >
+        <Button variant="outline" className="flex items-center gap-2 rounded-full">
           <Share2 className="w-4 h-4" />
           <span className="font-semibold">Bagikan</span>
         </Button>
@@ -57,27 +63,13 @@ const ShareDialogButton: React.FC<ShareDialogButtonProps> = ({
           <DialogTitle>Bagikan</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-1">
-          <div
-            onClick={() => handleCopyLink()}
-            className="p-2 flex items-center gap-2 justify-start hover:bg-gray-100 cursor-pointer"
-          >
+          <div onClick={() => handleCopyLink()} className="p-2 flex items-center gap-2 justify-start hover:bg-gray-100 cursor-pointer">
             <Copy className="w-4 h-4" />
             <span>Salin Tautan</span>
           </div>
           <DividerLine />
-          <Link
-            href={`https://www.facebook.com/sharer/sharer.php?u=${shareLink}`}
-            target="_blank"
-            className="p-2 flex items-center gap-2 justify-start hover:bg-gray-100"
-          >
-            <Image
-              src="/facebook.svg"
-              alt="Facebook Icon"
-              width={0}
-              height={0}
-              sizes="100vw"
-              className="w-4 h-4"
-            />
+          <Link href={`https://www.facebook.com/sharer/sharer.php?u=${shareLink}`} target="_blank" className="p-2 flex items-center gap-2 justify-start hover:bg-gray-100">
+            <Image src="/facebook.svg" alt="Facebook Icon" width={0} height={0} sizes="100vw" className="w-4 h-4" />
             <span>Facebook</span>
           </Link>
           <DividerLine />
@@ -85,15 +77,9 @@ const ShareDialogButton: React.FC<ShareDialogButtonProps> = ({
             href={`https://api.whatsapp.com/send?text=${shareLink}`}
             target="_blank"
             className="p-2 flex items-center gap-2 justify-start hover:bg-gray-100"
+            onClickCapture={() => logActivity("Whatsapp")}
           >
-            <Image
-              src="/whatsapp.svg"
-              alt="WhatsApp Icon"
-              width={0}
-              height={0}
-              sizes="100vw"
-              className="w-4 h-4"
-            />
+            <Image src="/whatsapp.svg" alt="WhatsApp Icon" width={0} height={0} sizes="100vw" className="w-4 h-4" />
 
             <span>WhatsApp</span>
           </Link>
@@ -102,15 +88,9 @@ const ShareDialogButton: React.FC<ShareDialogButtonProps> = ({
             href={`https://twitter.com/share?url=${shareLink}`}
             target="_blank"
             className="p-2 flex items-center gap-2 justify-start hover:bg-gray-100"
+            onClickCapture={() => logActivity("Twitter")}
           >
-            <Image
-              src="/x.svg"
-              alt="Twitter X Icon"
-              width={0}
-              height={0}
-              sizes="100vw"
-              className="w-4 h-4"
-            />
+            <Image src="/x.svg" alt="Twitter X Icon" width={0} height={0} sizes="100vw" className="w-4 h-4" />
             <span>Twitter/X</span>
           </Link>
           <DividerLine />
@@ -118,6 +98,7 @@ const ShareDialogButton: React.FC<ShareDialogButtonProps> = ({
             href={`mailto:?subject=${emailSubject}&body=${shareLink}`}
             target="_blank"
             className="p-2 flex items-center gap-2 justify-start hover:bg-gray-100"
+            onClickCapture={() => logActivity("Email")}
           >
             <Mail className="w-4 h-4" />
             <span>Email</span>

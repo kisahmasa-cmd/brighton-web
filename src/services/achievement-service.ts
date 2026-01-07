@@ -6,7 +6,7 @@ export type AchievementsResponse = ApiResponse<AchievementItem[]>;
 export type CategoriesAchievementResponse = ApiResponse<CategoriesAchievement[]>;
 
 export const getCategoriesAchievement = () => {
-  return apiFetch<CategoriesAchievementResponse>("/achievements/categories");
+  return apiFetch<CategoriesAchievementResponse>("/achievements/categories", { revalidate: 600 });
 };
 
 export const getAchievements = (URLSegment: string) => {
@@ -14,5 +14,6 @@ export const getAchievements = (URLSegment: string) => {
     params: {
       URLSegment,
     },
+    revalidate: 600,
   });
 };
