@@ -12,7 +12,7 @@ import { getSecondaryPopuler } from "@/services/homepage-service/secondary-new-s
 import LinkAds from "@/components/custom/LinkAds";
 import { HtmlContentDisplay } from "@/components/custom/HtmlContentDisplay";
 import { removeBaseUrl } from "../../../../../../utils/removeBaseUrl";
-import { buildArticleDetailSchema, buildWebPageSchema } from "@/lib/schema/schema-builder-helper";
+import { buildWebPageSchema } from "@/lib/schema/schema-builder-helper";
 import { InjectSchema } from "@/lib/schema/inject-schema";
 import { schemaBlogPosting } from "@/lib/schema/schema-blog-posting";
 import { cleanDescription } from "../../../../../../utils/cleanDescription";

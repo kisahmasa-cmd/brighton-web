@@ -46,5 +46,5 @@ export const getFooterTabs = async (Category = 1, Province = "", City = "", Type
 };
 
 export const getIcons = () => apiFetch<SocialMediaResponse>(`/socialicons`);
-export const getTestimonies = (NotCache: boolean = true) => apiFetch<TestimoniResponse>(`/testimonies`, { params: { Count: 5, Start: 0, Type: "UMUM" } });
-export const getBannerHero = (NotCache: boolean = true) => apiFetch<BannerImageResponse>(`/property-api/slideshow`, { base: "old", params: { onlyapp: "onlyapp" }, dynamic: false, revalidate: 600 });
+export const getTestimonies = (NotCache: boolean = true) => apiFetch<TestimoniResponse>(`/testimonies`, { params: { Count: 5, Start: 0, Type: "UMUM" }, revalidate: 300 });
+export const getBannerHero = (NotCache: boolean = true) => apiFetch<BannerImageResponse>(`/property-api/slideshow`, { base: "old", params: { onlyapp: "onlyapp" }, dynamic: false, revalidate: 3600 });

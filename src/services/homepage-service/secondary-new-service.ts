@@ -11,6 +11,7 @@ export const getSecondaryNew = (NotCache: boolean = true) =>
     body: JSON.stringify({ IsSold: false, SortOrder: "DESC", SortField: "New", Count: 10, ClientID: "66cd8c4d1ab291cad13d928d", IsNewWeb: true }),
     method: "POST",
     withClientId: false,
+    revalidate: 300,
     // dynamic: NotCache,
   });
 export const getSecondaryPopuler = (NotCache: boolean = true) =>
@@ -19,6 +20,7 @@ export const getSecondaryPopuler = (NotCache: boolean = true) =>
     body: JSON.stringify({ DayInterval: 30, IsSold: false, SortOrder: "DESC", SortField: "View", Count: 10, ClientID: "66cd8c4d1ab291cad13d928d", IsNewWeb: true }),
     method: "POST",
     withClientId: false,
+    revalidate: 300,
     // dynamic: NotCache,
   });
 
@@ -38,6 +40,8 @@ export const getPropertySecondary = (params?: PropertyParams) => {
     body: JSON.stringify(mergedParams),
     method: "POST",
     withClientId: false,
+    revalidate: 300,
+    debugISR: "getPropertySecondary",
   });
 };
 
@@ -66,5 +70,6 @@ export const getMetaImageFromSeondary = (params?: PropertyParams) => {
 export const getPropertyPrimary = (NotCache: boolean = true) =>
   apiFetch<PropertyResponse>(`/property/searchprimary`, {
     params: { Count: 10, IsNewWeb: true },
+    revalidate: 300,
     // dynamic: NotCache,
   });

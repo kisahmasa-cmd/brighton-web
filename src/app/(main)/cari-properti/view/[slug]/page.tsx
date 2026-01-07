@@ -165,7 +165,7 @@ const Page: React.FC<PageProps> = async (props) => {
                 {/* Transaction - Address */}
                 <h1 className="flex-1 font-bold uppercase mt-2">{title}</h1>
                 {/* Share Button */}
-                <ShareDialogButton emailSubject={title.toUpperCase()} />
+                <ShareDialogButton ID={secondaryData.ID} emailSubject={title.toUpperCase()} />
               </div>
               {/* Price */}
               {secondaryData.Type === "Tanah" ? (

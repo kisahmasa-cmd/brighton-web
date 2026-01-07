@@ -11,12 +11,13 @@ export const metadata: Metadata = {
 };
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 const page = async (props: PageProps) => {
+  const params = await props.params;
   const capitalizeWords = (str: string): string => {
     return str
       .split("-")
@@ -24,10 +25,10 @@ const page = async (props: PageProps) => {
       .join(" ");
   };
 
-  const title = capitalizeWords(props.params.slug);
+  const title = capitalizeWords(params.slug);
 
   const param: FAQCategoriesParams = {
-    URLSegment: props.params.slug,
+    URLSegment: params.slug,
   };
   const dataFAQCategories = await getFAQCategories(param);
   const filteredData = dataFAQCategories.Data.filter((item) => (item.Faqs ?? []).length > 0);
@@ -43,7 +44,7 @@ const page = async (props: PageProps) => {
             <h3 className="font-bold text-xl text-center">{title}</h3>
             {/* Collapsibles */}
             {filteredData.map((item, i) => (
-              <FAQCollapsible key={i} title={item.Title} questions={item.Faqs ?? []} categoryUrlSegment={props.params.slug} />
+              <FAQCollapsible key={i} title={item.Title} questions={item.Faqs ?? []} categoryUrlSegment={params.slug} />
             ))}
           </>
         ) : (

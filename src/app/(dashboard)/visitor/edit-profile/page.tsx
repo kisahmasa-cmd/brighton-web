@@ -1,10 +1,11 @@
-import {getUserInfo} from "@/actions/user-action";
 import VisitorProfileForm from "@/components/custom/VisitorProfileForm";
+import { info } from "@/services/user-service";
 
 export default async function EditProfilePage() {
-  const user = await getUserInfo();
+  const userInfo = await info();
+  const userInfoData = userInfo?.Data;
 
-  if (!user) return <div>No data user.</div>;
+  if (!userInfoData) return <div>No data user.</div>;
 
   return (
     <div>
@@ -12,7 +13,7 @@ export default async function EditProfilePage() {
         Edit Profile
       </h1>
       <div className="bg-white rounded-2xl shadow-sm p-4 md:p-8 max-w-2xl">
-        <VisitorProfileForm user={user} />
+        <VisitorProfileForm user={userInfoData} />
       </div>
     </div>
   );

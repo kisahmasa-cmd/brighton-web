@@ -9,7 +9,7 @@ export function HtmlContentDisplay({ content, title, description, className = ""
   const sanitizedContent = content?.trim() || "<p>Tidak ada konten.</p>";
 
   return (
-    <article className={`bg-white ${className} prose lg:prose-xl`} itemScope itemType="https://schema.org/Article">
+    <div className={`bg-white ${className} prose lg:prose-xl`} itemScope itemType="https://schema.org/Article">
       {title && (
         <h1 className="text-3xl font-bold mb-6 text-black" itemProp="headline">
           {title}
@@ -18,7 +18,6 @@ export function HtmlContentDisplay({ content, title, description, className = ""
 
       <div
         dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-        itemProp="articleBody"
         className="[&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mt-8 [&_h1]:mb-4 [&_h1]:text-black
                    [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-7 [&_h2]:mb-3 [&_h2]:text-black
                    [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-3 [&_h3]:text-black
@@ -33,6 +32,6 @@ export function HtmlContentDisplay({ content, title, description, className = ""
                    [&_li]:text-base [&_li]:mb-2 [&_li]:text-black
                    [&_img]:max-w-full [&_img]:h-auto [&_img]:my-4"
       />
-    </article>
+    </div>
   );
 }

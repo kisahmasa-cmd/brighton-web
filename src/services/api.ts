@@ -13,7 +13,7 @@ const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID || process.env.CLIENT_ID!;
 const CLIENT_ID_NODE = process.env.NEXT_PUBLIC_CLIENT_ID_NODE || process.env.CLIENT_ID_NODE!;
 
 type ApiFetchOptions = RequestInit & {
-  base?: "api" | "old" | "node" | "temp"// pilih base URL
+  base?: "api" | "old" | "node" | "temp"; // pilih base URL
   dynamic?: boolean;
   revalidate?: number;
   withClientId?: boolean; // bisa disable client_id
@@ -23,11 +23,12 @@ type ApiFetchOptions = RequestInit & {
   formDataBody?: FormData;
   formEncoded?: boolean; // pakai application/x-www-form-urlencoded
   params?: Record<string, string | number | boolean | null | undefined>;
+  debugISR?: string; // 👈 add this
 };
 
 export async function apiFetch<T>(endpoint: string, options?: ApiFetchOptions): Promise<T> {
   const start = Date.now();
-  const isDynamic = options?.dynamic || true;
+  const isDynamic = options?.dynamic || false;
   let baseURL = "";
 
   // Tentukan base URL sesuai base
@@ -145,14 +146,21 @@ export async function apiFetch<T>(endpoint: string, options?: ApiFetchOptions): 
   if (options?.withBearerToken) {
     const token = await getServerToken();
     bearerAccessToken = token?.AccessToken;
-  }
+ }
+
+  if (!options?.dynamic && options?.revalidate && options?.debugISR) {
+  console.log(
+    `[ISR:${options.debugISR}] EXECUTED at`,
+    new Date().toISOString()
+  );
+}
 
   const res = await fetch(urlObj.toString(), {
     ...options,
     headers: {
       ...(options?.formData ? {} : { "Content-Type": "application/json" }),
       ...(options?.headers || {}),
-      ...(options?.withBearerToken ? { Authorization: `Bearer ${bearerAccessToken}` } : {})
+      ...(options?.withBearerToken ? { Authorization: `Bearer ${bearerAccessToken}` } : {}),
     },
     body: bodyToSend,
     cache: isDynamic ? "no-store" : "default",

@@ -7,10 +7,8 @@ import { globalGenerateMetadataOptimal } from "@/lib/global-metadata-optimal";
 
 export const revalidate = 300; // Revalidate every 5 minutes
 
-type Params = Promise<{ slug: string }>;
-
 interface PageProps {
-  params: Params;
+  params: Promise<{ slug: string }>;
 }
 
 function toTitleCase(str: string) {
@@ -39,7 +37,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   });
 }
 
-export default async function Page({ params }: { params: { slug: string } }) {
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   // Fetch your data here
   const { slug } = await params;
   const propertyPrimary = await getPropertyPrimaryDetailAction(slug);

@@ -7,24 +7,17 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { edit } from "@/services/user-service";
-import { Profile } from "../../../types/user-types"; // Adjust path as needed
+import { Profile, UserInfo } from "../../../types/user-types"; // Adjust path as needed
 
 interface VisitorProfileFormProps {
-  user: Profile;
-}
-
-interface EditProfileRequestBody {
-  Name: string;
-  Email: string;
-  Phone: string;
-  Address: string;
+  user: UserInfo;
 }
 
 const VisitorProfileForm: React.FC<VisitorProfileFormProps> = ({ user }) => {
   const [name, setName] = useState<string>(user?.Name || "");
   const [email, setEmail] = useState<string>(user?.Email || "");
   const [phone, setPhone] = useState<string>(user?.Phone || "");
-  const [address, setAddress] = useState<string>("");
+  const [address, setAddress] = useState<string>(user?.Address ||"");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -39,10 +32,11 @@ const VisitorProfileForm: React.FC<VisitorProfileFormProps> = ({ user }) => {
   const handleEdit = async () => {
     try {
       setIsLoading(true);
-      const request: EditProfileRequestBody = {
+      const request: Profile = {
+        VisitorID: user.ID,
         Name: name,
         Email: email,
-        Phone: phone,
+        Telephone: phone,
         Address: address,
       };
       const result = await edit(request);
@@ -53,7 +47,8 @@ const VisitorProfileForm: React.FC<VisitorProfileFormProps> = ({ user }) => {
         throw "Update profile gagal!";
       }
     } catch (e) {
-      throw e;
+      console.error(e);
+      throw "Ups, ada kesalahan pada server";
     } finally {
       setIsLoading(false);
     }

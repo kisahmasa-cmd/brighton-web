@@ -13,7 +13,6 @@ const ACCESS_TOKEN = process.env.ACCESS_TOKEN!;
 export type PropertyPrimaryResponse = ApiResponse<Property[]>;
 export type PropertyPrimaryDetailResponse = ApiResponse<Property>;
 export type PropertySecondaryDetailResponse = ApiResponse<Property>;
-export type LastViewedProperties = ApiResponse<Property[]>;
 
 export const getPropertyPrimary = (params?: PropertyParams) => {
   const defaultParams: PropertyParams = {
@@ -31,7 +30,9 @@ export const getPropertyPrimary = (params?: PropertyParams) => {
     body: JSON.stringify(mergedParams),
     method: "POST",
     withClientId: false,
+    revalidate: 300,
     formData: true,
+    debugISR: "getPropertyPrimary",
   });
 };
 
@@ -97,9 +98,8 @@ export const getRelatedSecondaryProperties = (urlSegment: string) => {
   });
 };
 
-export const getLastViewedProperties = (id: string) => {
-  return apiFetch<LastViewedProperties>("/visitor/lastopenedlisting", {
-    params: { id: id, limit: 6 }
+export const getLastViewedProperties = (id: number) => {
+  return apiFetch<Property[]>("/visitor/lastopenedlisting", {
+    params: { id: id, limit: 6 },
   });
 };
-
